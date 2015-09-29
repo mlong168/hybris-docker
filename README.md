@@ -16,7 +16,7 @@ To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following.
 Start VM and Docker Apps
 --------
 
-Go to the hybris-docker/development directory and type 
+Go to the **hybris-docker/development** directory and type 
 
 - **vagrant up --provider docker --no-provision --no-parallel**
 
