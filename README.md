@@ -35,7 +35,7 @@ Vagrant will download the base box and provision it with docker and ansible usin
 
 Once it's done, you'll be able to login into it using vagrant ssh command. The hybris container stores the source in the /opt/rccl-tourtrek directory.
 
- - vagrant ssh $docker-app
+ - **vagrant ssh $docker-app**
 
 Connecting to Hybris Web
 ------------------------
