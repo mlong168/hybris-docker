@@ -20,6 +20,7 @@ java_install: false
 base_install: false
 npm_install: False
 solr_build_local: true
+mysql_enabled: true
 
 # Maven Setting
 maven_version: 3.3.3
