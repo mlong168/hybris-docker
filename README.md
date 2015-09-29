@@ -6,24 +6,30 @@ You will need VirtualBox, vagrant and ansible to be installed. ansible also requ
 
 Fast way to install VirtualBox and vagrant is to use brew cask. ansible can be installed with homebrew as well:
 
- - First, register for a GitHub account (http://github.com). Needed to install caskroom 
- - Open the GUI of Xcode to clear any required license agreement
+ - https://github.com/mlong168/mac-dev-playbook
 
- - brew update
- - brew install caskroom/cask/brew-cask
- - brew cask install virtualbox
- - brew cask install vagrant
- - brew install ansible
+To Provision Hyrbis locally (MacOSx and Ubuntu only) run the following.
+
+  - ** ansible-playbook -v -i ../shell/inventory .././ansible/deploy-osx.yml **
+  - ** ansible-playbook -v -i ../shell/inventory .././ansible/deploy-ubuntu.yml **
 
 Start VM and Docker Apps
 --------
-Go to the hybris-docker directory and type **vagrant up --provider docker**. vagrant will download the base box and provision it with docker and ansible using your configuration.
 
- - git clone https://USERNAME@keystone.roundarch.com/stash/scm/roylcarib/rccl-tourtrek.git
- - cd /path/to/rccl-tourtrek
- - git checkout develop
- - cd /path/to/rccl-tourtrek/hybris-docker/development
- - vagrant up --no-parallel --provider docker
+Go to the hybris-docker directory and type 
+
+- **vagrant up --provider docker --no-provision --no-parallel**
+
+Vagrant will download the base box and provision it with docker and ansible using your configuration.
+
+- To install Hybris in Docker: 
+  - BUILD_OPTS='install' vagrant provision hybris
+- To build and update master db: 
+  - BUILD_OPTS='updatemaster' vagrant provision hybris
+- To build and init the database:  
+  - BUILD_OPTS=’initmaster’ vagrant provision hybris
+- To run a build without database update: 
+  - vagrant provision hybris
 
 *Note that vagrant may ask for a sudo password. That's required when you're using NFS for folder synchronization.*
 
@@ -34,8 +40,15 @@ Once it's done, you'll be able to login into it using vagrant ssh command. The h
 Connecting to Hybris Web
 ------------------------
 
+Localhost:
+
  - HTTP URL: http://localhost:8000
  - HTTPS URL: https://localhost:8001 (https)
+
+Docker Container:
+
+ - HTTP URL: http://dockerhost:8000
+ - HTTPS URL: https://dockerhost:8001 (https)
 
 Control
 -------
@@ -61,13 +74,13 @@ Hybris Deploy
 
 On first deploy the Hybris provision playbook will checkout the git repo (develop branch) and run any necessary configurations. It will also run through the normal Hybris build process and commence with initializing the MySQL database. 
 
-To test any changes to code you will need to rebuild Hybris. To do so you can run the following from the following:
+To test any changes to code you that will need to rebuild the Hybris database. You can run the following from the **hybris-docker/development** directory:
 
- - ansible-playbook -t hybris --extra-vars "branch=develop hybris_update_db=True hybris_init_db=False" ../ansible/site.yml
+ - BUILD_OPTS='updatemaster' vagrant provision hybris
 
 Change the "branch" name to the one you are working on and want to test and change init and update to True or False depending on whether you would like to update the database or reinitialize. To skip both change both to False. 
 
-These options can also be set in: /path/to/rccl-tourtrek/hybris-docker/ansible/group_vars/hybris/config.yml
+These options can also be set in: /path/to/hybris-docker/ansible/vars/$build-option.yml
 
 Customization
 -------------
