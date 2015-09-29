@@ -106,11 +106,6 @@
   lineinfile: dest={{ ant_profile }} state=present backrefs=yes regexp='PATH=(["]*)((?!.*?{{ hybris_ant_path }}).*?)(["]*)$' line="PATH=\1\2:{{ hybris_ant_home }}\3"
   tags: ant
 
-- name: Set hybris_master_blaster var
-  set_fact: hybris_host_type={{ 'master' if hybris_master_blaster == hybris_master_blaster else 'slave' }}
-  tags: osx
-  when: local_enabled |default(False)
-
 - name: Create DB driver dir
   file: path={{ hybris_mysql_lib_dir }} state=directory
   tags: osx
@@ -133,13 +128,13 @@
 - name: Initialize hybris database
   shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant initmaster
   sudo: no
-  when: hybris_init_db |default(False) and hybris_host_type == 'master'
+  when: hybris_init_db |default(False)
   tags: osx
 
 - name: Update hybris 
   shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant updatemaster
   sudo: no
-  when: hybris_update_db |default(False) and hybris_host_type == 'master'
+  when: hybris_update_db |default(False)
   tags: osx
 
 - name: Set permissions on hybris directory

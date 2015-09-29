@@ -85,9 +85,9 @@ Vagrant.configure('2') do |config|
         d.has_ssh             = opts[:has_ssh]
       end
 
-      #if %w(hybris).include?(opts[:name])
-      #  container.vm.synced_folder '../../', '/opt/rccl-tourtrek-local'
-      #end
+      if %w(hybris).include?(opts[:name])
+        container.vm.synced_folder '/Users/$USER/Documents/rccl-tourtrek', '/opt/rccl-tourtrek', type: "rsync"
+      end
 
       container.ssh.username = "root"
       container.ssh.private_key_path = "phusion.key"
