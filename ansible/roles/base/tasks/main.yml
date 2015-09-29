@@ -1,0 +1,8 @@
+---
+# Main task list for Base
+
+- include: packages-repo-setup.yml
+- include: harden-basic.yml
+- include: packages-system.yml
+- include: packages-security.yml
+- include: packages-networking.yml

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd {{solr_installation_dir}}
+
+SERVICE_NAME={{ solr_service_name }}
+DAEMON="java -Djetty.port="{{solr_port}}" -Dsolr.solr.home="{{solr_installation_dir}}" $JAVA_OPTS -jar {{solr_installation_dir}}/start.jar"
+
+exec chpst -u $SERVICE_NAME -o 5000000 -- $DAEMON

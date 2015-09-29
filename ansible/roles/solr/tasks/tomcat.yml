@@ -1,0 +1,38 @@
+---
+
+- name: ensures {{tomcat_dir}}/{{tomcat_version}}/conf/Catalina/localhost exists
+  file:
+    path="{{tomcat_dir}}/{{tomcat_version}}/conf/Catalina/localhost"
+    state=directory
+
+- name: creates solr context at Tomcat
+  template:
+    src="tomcat/solr.xml.j2"
+    dest={{tomcat_dir}}/{{tomcat_version}}/conf/Catalina/localhost/solr.xml
+
+- name: ensures {{tomcat_dir}}/{{tomcat_version}}/lib exists
+  file:
+    path="{{tomcat_dir}}/{{tomcat_version}}/lib"
+    state=directory
+    mode=0750
+
+- name: ensures Log4j.properties is present
+  template:
+    src="tomcat/log4j.properties.j2"
+    dest="{{tomcat_dir}}/{{tomcat_version}}/lib/log4j.properties"
+
+- name: ensures logging dependencies are at  tomcat/lib dir
+  copy: 
+    src="{{solr_local_dir}}/example/lib/ext/"
+    dest="{{tomcat_dir}}/{{tomcat_version}}/lib/"
+    force=no
+
+- name: ensures {{item}} directory exists
+  file: path={{item}} state=directory
+  with_items:
+    - "{{solr_installation_dir}}/lib"
+
+- name: copies solr.war to {{solr_installation_dir}}
+  copy:
+    src="{{solr_local_dir}}/example/webapps/solr.war"
+    dest="{{solr_installation_dir}}"

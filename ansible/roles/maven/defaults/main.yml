@@ -1,0 +1,5 @@
+---
+maven_version: 3.3.3
+maven_url: http://www.apache.org/dist/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz
+maven_prefix: /usr/local
+maven_dir: "{{ maven_prefix }}/apache-maven-{{ maven_version }}"

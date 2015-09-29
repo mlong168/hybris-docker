@@ -1,0 +1,31 @@
+---
+
+- name: action | install_conf | ensures Solr conf config dir is present at host
+  copy:
+    src="{{solr_local_config_dir}}/"
+    dest="{{solr_installation_dir}}/conf/"
+  when: solr_local_config_dir is defined
+
+- name: action | install_conf | ensures Solr conf local config file is present at host
+  copy:
+    src="{{solr_local_config_file}}"
+    dest="{{solr_installation_dir}}/conf/solrconfig.xml"
+  when: solr_local_config_file is defined
+
+- name: action | install_conf | ensures Solr conf config is built from defined template
+  template:
+    src="{{solr_local_config_template}}"
+    dest="{{solr_installation_dir}}/conf/solrconfig.xml"
+  when: 'solr_local_config_template is defined'
+
+- name: action | install_conf | ensures Solr conf local schema file is present at host
+  copy:
+    src="{{solr_local_schema_file}}"
+    dest="{{solr_installation_dir}}/conf/schema.xml"
+  when: solr_local_schema_file is defined
+
+- name: action | install_conf | ensures Solr conf config is built from template if none of the previous alternatives was used
+  template:
+    src="solrconfig.xml.j2"
+    dest="{{solr_installation_dir}}/conf/solrconfig.xml"
+  when: 'solr_local_config_dir is not defined and solr_local_config_file is not defined and solr_local_config_template is not defined'

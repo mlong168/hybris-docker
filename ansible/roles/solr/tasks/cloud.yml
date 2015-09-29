@@ -1,0 +1,31 @@
+---
+
+- name: cloud | ensures zoo.cfg exists in case of embedded run
+  copy:
+    src="{{solr_local_dir}}/example/solr/zoo.cfg"
+    dest="{{solr_installation_dir}}/zoo.cfg"
+  when: solr_cloud_zookeeper_embedded == true
+
+- name: cloud | ensures solr.xml configured for SolrCloud exists at {{solr_installation_dir}}
+  copy:
+    src="{{solr_local_dir}}/example/solr/solr.xml"
+    dest="{{solr_installation_dir}}/solr.xml"
+
+- name: cloud | ensures Solr core config dir is present at host
+  copy:
+    src="{{solr_local_config_dir}}/"
+    dest="{{solr_installation_dir}}/conf/"
+  when: solr_cloud_collection_boostrap_dir is defined
+
+- name: cloud | ensures cloud-scripts exists at {{solr_installation_dir}}
+  copy:
+    src="zkcli.sh"
+    dest="{{solr_installation_dir}}/zkcli.sh"
+    mode=0755
+
+- name: cloud | ensures zkbootstrap.sh exists at {{solr_installation_dir}}
+  template:
+    src="zkbootstrap.sh.j2"
+    dest="{{solr_installation_dir}}/zkbootstrap.sh"
+    mode=0700
+  when: solr_cloud_collection_boostrap_dir is defined

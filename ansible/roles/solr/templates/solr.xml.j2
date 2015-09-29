@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<solr persistent="true" sharedLib="{{ solr_shared_lib_dir }}">
+
+  <!--
+  adminPath: RequestHandler path to manage cores.  
+    If 'null' (or absent), cores will not be manageable via request handler
+  -->
+  <cores adminPath="/admin/cores" host="${host:}" hostPort="${jetty.port:8983}" hostContext="${hostContext:solr}">
+    {% for core in solr_cores %}<core name="{{core.name}}" instanceDir="{{core.name}}" {% if core.data_dir is defined %} dataDir="{{core.data_dir}}"{% endif %} />
+    {% endfor %}
+    
+    <shardHandlerFactory name="shardHandlerFactory" class="HttpShardHandlerFactory">
+      <str name="urlScheme">${urlScheme:}</str>
+    </shardHandlerFactory>
+  </cores>
+        
+</solr>

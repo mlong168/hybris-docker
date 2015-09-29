@@ -1,0 +1,64 @@
+---
+
+- name: action | install | download Solr to hosts
+  local_action:
+    get_url 
+      url="{{solr_download_url}}"
+      dest="{{solr_download_dir}}/{{solr_package}}"
+  tags: download
+
+- name: action | install | unpack Solr at control machine
+  local_action:
+    unarchive
+      src="{{solr_download_dir}}/{{solr_package}}"
+      dest="{{solr_download_dir}}/"
+  tags: unpack
+
+- name: action | install | ensures solr.xml file is present at {{solr_installation_dir}}
+  copy:
+    src="solr.xml"
+    dest="{{solr_installation_dir}}/"
+    mode=0644
+
+- name: action | install | ensures {{solr_lib_dir}} is present at host machine
+  file:
+    path="{{solr_lib_dir}}"
+    state=directory
+    mode=0700
+
+- name: action | install | ensures {{solr_shared_lib_dir}} is present at host machine
+  file:
+    path="{{solr_shared_lib_dir}}"
+    state=directory
+    mode=0700
+
+- name: action | ensures hybris hybriscomponents exists at {{solr_shared_lib_dir}}
+  copy:
+    src="hybriscomponents.5.3.0.3.jar"
+    dest="{{solr_shared_lib_dir}}/hybriscomponents.5.3.0.3.jar"
+    mode=0755
+
+- name: action | install | ensures {{solr_local_libs}} are present at {{solr_lib_dir}} at host machine
+  copy:
+    src="{{item}}"
+    dest="{{solr_lib_dir}}/"
+  with_items: solr_local_libs
+  when: solr_local_libs is defined and solr_lib_dir is defined
+
+- name: action | install | ensures solr dist and external dependencies are present at host machine
+  copy:
+    src="{{solr_local_lib_dir}}"
+    dest="{{solr_installation_dir}}/{{solr_lib_dir}}"
+  when: solr_local_lib_dir is defined
+
+- include: cloud.yml
+  when: solr_replication_mode == 'cloud'
+
+- include: jetty.yml
+  when: solr_container == 'jetty' or solr_replication_mode == 'cloud'
+
+- include: solr_user.yml
+  when: solr_replication_mode == 'cloud'
+
+- include: tomcat.yml
+  when: solr_container == 'tomcat' and solr_replication_mode != 'cloud'

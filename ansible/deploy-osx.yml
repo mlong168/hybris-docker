@@ -1,0 +1,5 @@
+- hosts: localhost
+  user: "{ lookup('env','USER') }}"
+  connection: local
+  roles:
+    - { role: hybris, tags: [osx_conf] }

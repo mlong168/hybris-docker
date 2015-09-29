@@ -1,0 +1,21 @@
+---
+- name: Copy ssh key to deploy host
+  copy: src=phusion.key dest=~/.ssh/phusion.key mode=600
+  tags: deploy_war 
+
+- name: Remove host key to authorised host file
+  command: ssh-keygen -R {{ hostvars.hybris_cis.ansible_ssh_host  }}
+  ignore_errors: yes
+  tags: deploy_war 
+
+- name: Add host key to authorised host file
+  command: ssh-keyscan -H {{ hostvars.hybris_cis.ansible_ssh_host  }} >> ~/.ssh/known_hosts
+  ignore_errors: yes
+  tags: deploy_war 
+
+- name: deploy war
+  #shell: 'rsync -azv -e "ssh -i ~/.ssh/phusion.key" --chown=tomcat.tomcat {{ war_file }} root@{{ hostvars.hybris_cis.ansible_ssh_host }}:{{ remote_war_file }}'
+  synchronize: mode=pull src={{ war_file  }} dest={{ remote_war_file  }} 
+  delegate_to: "{{ hostvars.hybris_cis.ansible_ssh_host  }}"
+  tags: deploy_war
+

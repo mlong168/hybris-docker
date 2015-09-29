@@ -1,0 +1,65 @@
+---
+
+- name: action | install_core | ensures Solr cores dirs exists
+  file:
+    path="{{solr_installation_dir}}/{{solr_core_name}}/{{item}}"
+    state=directory
+    mode=0755
+  with_items:
+    - conf
+    - data
+
+- name: action | install_core | ensures Solr cores data dirs exists
+  file:
+    path="{{solr_data_dir}}"
+    state=directory
+    mode=0755
+  when: solr_data_dir is defined
+
+- name: action | install_core | ensures Solr core config dir is present at host
+  copy:
+    src="{{solr_local_config_dir}}/"
+    dest="{{solr_installation_dir}}/{{solr_core_name}}/conf/"
+  when: solr_local_config_dir is defined
+
+- name: action | install_core | ensures Solr core local config file is present at host
+  copy:
+    src="{{solr_local_config_file}}"
+    dest="{{solr_installation_dir}}/{{solr_core_name}}/conf/solrconfig.xml"
+  when: solr_local_config_file is defined
+
+- name: action | install_core | ensures Solr core config is built from defined template
+  template:
+    src="{{solr_local_config_template}}"
+    dest="{{solr_installation_dir}}/{{solr_core_name}}/conf/solrconfig.xml"
+  when: 'solr_local_config_template is defined'
+
+- name: action | install_core | ensures Solr core local schema file is present at host
+  copy:
+    src="{{solr_local_schema_file}}"
+    dest="{{solr_installation_dir}}/{{solr_core_name}}/conf/schema.xml"
+  when: solr_local_schema_file is defined
+
+- name: action | install_core | ensures Solr core config is built from template if none of the previous alternatives was used
+  template:
+    src="solrconfig.xml.j2"
+    dest="{{solr_installation_dir}}/{{solr_core_name}}/conf/solrconfig.xml"
+  when: 'solr_local_config_dir is not defined and solr_local_config_file is not defined and solr_local_config_template is not defined'
+
+- name: action | install_core | ensures solr.xml has all cores registered when we are not using Solr Cloud
+  lineinfile:
+    dest="{{solr_installation_dir}}/solr.xml"
+    line='<core name="{{solr_core_name}}" instanceDir="{{solr_core_name}}" dataDir="{{solr_data_dir}}" />'
+    state='present'
+    insertafter='solr}">'
+    create=true
+  when: solr_replication_mode != 'cloud'
+
+- name: action | install_core | ensures core.properties exists at {{solr_installation_dir}}/{{solr_core_name}}
+  template:
+    src="core.properties.j2"
+    dest="{{solr_installation_dir}}/{{solr_core_name}}/core.properties"
+  when: solr_replication_mode == 'cloud'
+
+- include: solr_user_master.yml
+  when: solr_replication_mode != 'cloud'

@@ -1,0 +1,36 @@
+---
+# TASK: Install the security related packages and services
+
+- name: Install security packages (apt version)
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - openssl
+  when: ansible_distribution == 'Ubuntu'
+
+- name: add /etc/security/limits.conf
+  copy: >
+    src=etc-security-limits.conf
+    dest=/etc/security/limits.conf
+    owner=root group=root mode=0644
+  tags:
+    - base:security
+  when: ansible_distribution == 'Ubuntu'
+
+- name: add /etc/apt/apt.conf.d/10periodic
+  copy: >
+    src=etc-apt-apt.conf.d-10periodic
+    dest=/etc/apt/apt.conf.d/10periodic
+    owner=root group=root mode=0644
+  tags:
+    - base:security
+  when: ansible_distribution == 'Ubuntu'
+
+- name: add /etc/apt/apt.conf.d/50unattended-upgrades
+  template: >
+    src=etc-apt-apt.conf.d-50unattended-upgrades
+    dest=/etc/apt/apt.conf.d/50unattended-upgrades
+    owner=root group=root mode=0644
+  tags:
+    - base:security
+  when: ansible_distribution == 'Ubuntu'
+

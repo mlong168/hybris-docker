@@ -1,0 +1,5 @@
+---
+- name: Restart hybris service
+  service:
+    name=hybris
+    state=restarted

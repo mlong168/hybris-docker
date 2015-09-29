@@ -1,0 +1,83 @@
+---
+# Install some helpful system packages
+
+- name: Update APT repo cache
+  apt: update_cache=yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install system packages (apt version)
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - git-core
+    - less
+    - perl
+    - perl-modules
+    - python
+    - python-support
+    - python-pip
+    - python-dev
+    - sudo
+    - sysstat
+    - unzip
+    - zip
+    - mailutils
+    - unattended-upgrades
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install system packages (yum version)
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - git
+    - less
+    - perl
+    - python
+    - python-pip
+    - sudo
+    - unzip
+    - zip
+  when: ansible_distribution == 'Amazon'
+
+- name: install additional common packages
+  apt: pkg={{ item }} state=installed
+  with_items: additionalPackages
+
+- name: Install boto Python library
+  pip: name=boto state=latest
+
+- name: Install AWS CLI
+  pip: name=awscli state=latest
+
+# Get the super handy ec2metadata script over there
+- name: Copy ec2metadata script
+  copy: src={{ ansible_distribution }}/ec2metadata dest=/usr/bin/ec2metadata owner=root group=root mode=0755
+  when: ansible_distribution == 'Amazon'
+  tags: ec2metadata
+
+- name: Get cloud-init to manage hosts file
+  lineinfile: 'dest=/etc/cloud/cloud.cfg state=present line="manage_etc_hosts: True" regexp="^manage_etc_hosts\: True" insertafter="^preserve_hostname"'
+  when: cloud_provider == 'AWS'
+  tags: cloud-init
+
+- name: add /etc/sysctl.d/99-tuning.conf
+  copy: >
+    src=etc-sysctl.d-99-tuning.conf
+    dest=/etc/sysctl.d/99-tuning.conf
+    owner=root group=root mode=0644
+  notify: start procps
+  when: ansible_distribution == 'Ubuntu'
+
+- name: add /etc/timezone
+  lineinfile: >
+    dest=/etc/timezone
+    regexp="^"
+    line='{{ timezone }}'
+    state=present
+  notify: timezone apply
+  when: ansible_distribution == 'Ubuntu'
+
+- name: update /etc/pam.d/common-session
+  lineinfile: >
+    state=present
+    regexp=^
+    line='session required        pam_limits.so'
+    dest=/etc/pam.d/common-session

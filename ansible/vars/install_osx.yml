@@ -1,0 +1,25 @@
+---
+
+### Hybris Settings ###
+ansible_config:
+  extra_vars:
+    hybris_init_db:   True
+    hybris_provision: false
+    hybris_provision_local: true
+    hybris_update_db: False
+    hybris_ant_clean: True
+    checkout_branch: True
+    branch: 'develop'
+    hybris_master_blaster: hybris
+    clone_repo: False
+    hybris_initd_service: false
+    hybris_runit_dir: "/etc/service/hybris"
+    deploy_cis_war: false
+    hybris_vagrant_file: False
+    hybris_s3_file: True
+    hybris_install_archive: False
+    java_install: false
+    base_install: false
+    npm_install: False
+    local_enabled: True
+    linux_install: False

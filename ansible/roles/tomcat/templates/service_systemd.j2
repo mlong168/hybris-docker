@@ -1,0 +1,34 @@
+[Unit]
+Description=Tomcat servlet container
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/run/tomcat.pid
+Environment=CATALINA_PID=/run/tomcat.pd
+Environment=TOMCAT_JAVA_HOME={{ java_home }}
+Environment=CATALINA_HOME={{ tomcat_env_catalina_home }}
+Environment=CATALINA_BASE={{ tomcat_env_catalina_base }}
+Environment=CATALINA_OPTS="{{ tomcat_env_catalina_opts|default('') }}"
+{% if tomcat_service_umask is defined %}
+UMask={{ tomcat_service_umask }}
+{% endif %}
+
+ExecStart=/usr/bin/jsvc \
+  -Dcatalina.home=${CATALINA_HOME} \
+  -Dcatalina.base=${CATALINA_BASE} \
+  -Djava.io.tmpdir={{ tomcat_env_catalina_base }}/temp \
+  -java-home ${TOMCAT_JAVA_HOME} \
+  -pidfile /run/tomcat.pid \
+  -errfile SYSLOG \
+  -outfile SYSLOG \
+  $CATALINA_OPTS \
+  org.apache.catalina.startup.Bootstrap
+
+ExecStop=/usr/bin/jsvc \
+  -pidfile /run/tomcat.pid \
+  -stop \
+  org.apache.catalina.startup.Bootstrap
+
+[Install]
+WantedBy=multi-user.target

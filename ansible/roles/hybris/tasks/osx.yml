@@ -1,0 +1,167 @@
+---
+
+- name: Setup node.js
+  npm: global=yes name={{ item }}
+  sudo: no
+  with_items:
+    - gulp
+    - map-stream
+    - node-sass
+  tags: osx
+
+- name: Copy maven global settings template
+  template:
+    src=settings_xml_osx.j2
+    dest=~/.m2/settings.xml
+    mode=0644
+  tags: osx
+
+- name: Checkout tagged version of hybris git repo
+  git: repo={{ hybris_git_user }} dest={{ hybris_home_dir }} version={{ branch }} force=yes accept_hostkey=yes
+  when: checkout_branch |default(False) and branch is defined
+  tags: osx
+
+- name: Create temp directory
+  file:
+    path={{ hybris_temp_dir }}
+    state=directory
+    mode=0755
+  tags: osx
+
+- name: Copy s3 configuration
+  copy: src=.s3cfg dest=~/ mode=0600
+  tags: osx
+
+- name: Download hybris osx from S3
+  command: "{{ item }}"
+  with_items:
+    - s3cmd get --skip-existing --no-check-md5 --no-encrypt {{ hybris_s3_object }} {{ hybris_temp_dir }}
+  when: hybris_s3_file |default(false)
+  tags: osx
+
+- name: get RDS instance facts
+  rds: 
+    aws_access_key={{ lookup('env', 'AWS_ACCESS_KEY_ID') }}
+    aws_secret_key={{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}
+    command=facts 
+    instance_name={{ rds_instance_name }} 
+    region={{ region }}
+  when: rds_db_enable |default(False)
+  register: rds
+  tags: osx
+
+- name: Add hybris configuration
+  template:
+    src=local_properties.j2
+    dest={{ hybris_conf_file }}
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: osx
+
+- name: Add hybris cis configuration
+  template:
+    src=cispayment_properties.j2
+    dest={{ hybris_cis_conf_file }}
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: osx
+
+- name: Add default_properties.j2
+  template:
+    src=default_properties.j2
+    dest={{ hybris_default_properties }}
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: osx
+
+- name: Add payment-subscription_properties.j2
+  template:
+    src=payment-subscription_properties.j2
+    dest={{ hybris_payment_subscription_properties }}
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: osx
+
+- name: Add =production-profile_properties.j2
+  template:
+    src=production-profile_properties.j2
+    dest={{ hybris_production_profile_properties }}
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: osx
+
+- name: Set ANT_HOME environment variable
+  lineinfile: dest={{ ant_profile }} regexp='^ANT_HOME.*' line='ANT_HOME={{ hybris_ant_home }}' insertbefore='^PATH.*'
+  tags: ant
+
+- name: Set ANT_OPTS envrionment variable
+  lineinfile: dest={{ ant_profile }} regexp='^ANT_OPTS.*' line='ANT_OPTS="-Xmx200m -XX:MaxPermSize=128M"' insertbefore='^PATH.*'
+  tags: ant
+
+- name: Set PLATFORM_HOME envrionment variable
+  lineinfile: dest={{ ant_profile }} regexp='^PLATFORM_HOME.*' line='PLATFORM_HOME={{ hybris_platform_home }}' insertbefore='^PATH.*'
+  tags: ant
+
+- name: Add Ant binaries to PATH environment variable
+  lineinfile: dest={{ ant_profile }} state=present backrefs=yes regexp='PATH=(["]*)((?!.*?{{ hybris_ant_path }}).*?)(["]*)$' line="PATH=\1\2:{{ hybris_ant_home }}\3"
+  tags: ant
+
+- name: Set hybris_master_blaster var
+  set_fact: hybris_host_type={{ 'master' if hybris_master_blaster == hybris_master_blaster else 'slave' }}
+  tags: osx
+  when: local_enabled |default(False)
+
+- name: Create DB driver dir
+  file: path={{ hybris_mysql_lib_dir }} state=directory
+  tags: osx
+
+- name: Add hybris mysql driver
+  copy: src={{ hybris_mysql_lib_dir }} dest={{ hybris_mysql_lib_dir }} mode=0644 
+  tags: osx
+
+- name: Clean environment before build
+  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant clean
+  sudo: no
+  tags: osx
+  when: hybris_ant_clean |default(False)
+
+- name: Full Build hybris server
+  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant install && ant customize && ant
+  sudo: no
+  tags: osx
+
+- name: Initialize hybris database
+  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant initmaster
+  sudo: no
+  when: hybris_init_db |default(False) and hybris_host_type == 'master'
+  tags: osx
+
+- name: Update hybris 
+  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant updatemaster
+  sudo: no
+  when: hybris_update_db |default(False) and hybris_host_type == 'master'
+  tags: osx
+
+- name: Set permissions on hybris directory
+  file:
+    path={{ hybris_home_dir }}
+    state=directory
+    owner={{ lookup('env','USER') }}
+    recurse=yes
+  when: hybris_enable |default(False)
+  tags: osx
+
+- name: Stop Hybris
+  shell: "{{ daemon }} stop"
+  tags: osx
+
+- name: Start Hybris
+  shell: "{{ daemon }} start"
+  tags: osx
+
+- wait_for:
+    state=started
+    host={{ hybris_connect_addr }}
+    port={{ hybris_connect_port }}
+    delay=2
+  tags: osx

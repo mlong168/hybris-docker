@@ -1,0 +1,18 @@
+#!/bin/sh
+
+USER={{ tomcat_user_name }}
+GROUP={{ tomcat_user_group }}
+
+CATALINA_HOME={{ tomcat_env_catalina_home }}
+
+export JAVA_HOME={{ java_home }}
+export CATALINA_HOME={{ tomcat_env_catalina_home }}
+export CATALINA_BASE={{ tomcat_env_catalina_base }}
+export CATALINA_OPTS="{{ tomcat_env_catalina_opts|default('') }}"
+
+{% if tomcat_service_umask is defined %}
+  umask {{ tomcat_service_umask }}
+{% endif %}
+
+exec chpst -u $USER -o 5000000 -- $CATALINA_HOME/bin/catalina.sh run
+

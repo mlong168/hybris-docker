@@ -1,0 +1,185 @@
+---
+
+# Defaults file for hybris
+docker: false
+hybris_enable: True
+hybris_home_dir: /opt/rccl-tourtrek
+hybris_temp_dir: "{{ hybris_home_dir }}/temp"
+hybris_conf_file: "{{ hybris_home_dir }}/hybris/config/local.properties"
+hybris_default_properties: "{{ hybris_home_dir }}/hybris/config/default.properties"
+hybris_payment_subscription_properties: "{{ hybris_home_dir }}/hybris/config/payment-subscription.properties"
+hybris_production_profile_properties: "{{ hybris_home_dir }}/hybris/config/production-profile.properties"
+hybris_mysql_lib_dir: "{{ hybris_home_dir }}/hybris/bin/platform/lib/dbdriver"
+hybris_mysql_driver: mysql-connector-java-5.1.36-bin.jar
+hybris_build_dir: "{{ hybris_home_dir }}"
+hybris_node_dir: "{{ hybris_home_dir }}/hybris/bin/custom/tourtrek/tourtrekstorefront/web/webroot/_ui"
+hybris_connect_addr: 127.0.0.1
+hybris_connect_port: 8000
+npm_install: False
+solr_build_local: false
+
+# Download hybris from S3 or local file
+hybris_s3_file: True
+hybris_vagrant_file: False
+local_dir: /tmp
+hybris_install_file: hybris-commerce-suite-5.3.0.3.zip
+hybris_s3_object: "s3://hybris-commerce-suite-install/{{ hybris_install_file }}"
+hybris_install_archive: False
+
+# Ant Settings
+hybris_ant_home: "{{ hybris_home_dir }}/build/lib/apache-ant-1.9.1/bin"
+hybris_platform_home: "{{ hybris_home_dir }}/hybris/bin/platform"
+hybris_ant_path: "{{ hybris_home_dir }}/build/lib/apache-ant-1.9.1"
+
+# CIS settings
+war_file: "{{ hybris_home_dir }}/cis/apache-tomcat-7.0.56/webapps/ttCybersourceCisPaymentService-web.war"
+remote_war_file: /srv/tomcat/catalina/webapps/ttCybersourceCisPaymentService-web.war
+hybris_cis_conf_file: "{{ hybris_home_dir }}/hybris/config/cispayment.properties"
+deploy_cis_war: false
+
+# Hybris Build Settings
+#hybris_git_user: ssh://git@keystone.roundarch.com:7999/roylcarib/rccl-tourtrek.git
+hybris_git_user: https://SA_ROYALGIT:75M265puJ8dYKFnP5zG4@keystone.roundarch.com/stash/scm/roylcarib/rccl-tourtrek.git
+hybris_master_blaster: "hybris"
+hybris_init_db: False
+hybris_update_db: False
+hybris_ant_clean: False
+hybris_cis_enable: False
+checkout_archive: False
+checkout_branch: False
+clone_repo: False
+
+#AWS Facts
+rds_db_enable: False
+rds_instance_name: "{{ env }}-hybris-db-1"
+aws_enabled: False
+local_enabled: False
+linux_install: False
+s3_enabled: false
+cluster_enabled: false
+mysql_enabled: false
+
+# ssh known host
+ssh_known_hosts_command: "ssh-keyscan -H -T 10"
+ssh_known_hosts_port_command: "ssh-keyscan -p 7999 -H -T 10"
+ssh_known_hosts_file: "/etc/ssh/ssh_known_hosts"
+ssh_known_hosts:
+  - github.com
+  - bitbucket.org
+  - keystone.roundarch.com
+
+# Hybris init script options
+hybris_cis_service_stop: False
+hybris_initd_service: "true"
+hybris_service_stop: False
+daemon: "{{ hybris_home_dir }}/hybris/bin/platform/hybrisserver.sh"
+daemon_opts: "start"
+pidfile: "{{ hybris_home_dir }}/hybris/data/hybristomcat.java.pid"
+service_name: hybris
+hybris_runit_dir: "/etc/service/hybris"
+
+
+# Hybris local_properties configuration
+
+###############################################################################
+### JVM SETTINGS ##############################################################
+###############################################################################
+
+hybris_java_mem: "3G"
+hybris_cache_main: 300000
+hybris_java_permSize: "512M"
+  
+####################Tomcat Settings##################
+hybris_tomcat_development_mode: "true"
+hybris_tomcat_http_port: 8000
+hybris_tomcat_ssl_port: 8001
+
+#####################Platform Specific Settings#############
+
+hybris_build_development_mode: "true"
+
+####################Tourtrek Storefront Settings#############
+
+hybris_storefront_resourceBundle_cacheSeconds: 1
+hybris_storefront_btg_enabled: "false"
+hybris_tourtrekstorefront_webroot: ""
+hybris_storefrontContextRoot: ""
+hybris_storefront_show_debug_info: "false"
+hybris_tourtrekstorefront_build_gulp: "true"
+hybris_tourtrekstorefront_build_gulp_env: ""
+
+###############################################################################
+### HMC SETTINGS ##############################################################
+############################################################################
+
+hybris_hmc_developermode: "true"
+
+# CIS Settings
+
+hybris_gateway_uri: ""
+# -----------------------------------------------------------------------
+# CIS PAYMENT INTEGRATION
+#
+hybris_mockPaymentService_host: "localhost"
+hybris_mockPaymentService_port: "8080"
+hybris_payment_client_endpoint_uri: "http://localhost:8080/paymentService-web/psp/paymentService/"
+hybris_cis_rest_mock_payment_pspUrl: "http://localhost:8000/acceleratorservices/sop-mock/process"
+hybris_cis_rest_mock_payment_pspUrlLocation: "http://localhost:8000/acceleratorservices/sop-mock/process"
+
+
+# CIS Payment endpoint configuration (external cis)
+hybris_paymentService_host: ""
+hybris_paymentService_port: "8080"
+hybris_payment_client_endpoint_uri: ""
+
+
+# CyberSource Endpoint
+
+hybris_cybersource_sop_response_url: ""
+
+# Database Options
+
+hybris_db_url: ""
+hybris_db_driver: "" 
+hybris_db_username: ""
+hybris_db_password: ""
+hybris_mysql_tabletype: ""
+hybris_mysql_allow_fractional_seconds: ""
+hybris_db_tableprefix: ""
+hybris_db_customsessionsql: ""
+hybris_mysql_optional_tabledefs: ""
+
+
+# Cluster Config
+
+hybris_clustermode: ""
+hybris_cluster_id: ""
+hybris_cluster_maxid: ""
+hybris_cluster_broadcast_methods: ""
+hybris_cluster_broadcast_method_jgroups: ""
+hybris_cluster_broadcast_method_jgroups_tcp_bind_addr: ""
+hybris_cluster_broadcast_method_jgroups_tcp_bind_port: ""
+hybris_cluster_broadcast_method_jgroups_channel_name: ""
+
+# S3 Config
+
+hybris_media_default_storage_strategy: ""
+hybris_media_default_url_strategy: ""
+hybris_media_globalSettings_s3MediaStorageStrategy_accessKeyId: ""
+hybris_media_globalSettings_s3MediaStorageStrategy_secretAccessKey: ""
+hybris_media_globalSettings_s3MediaStorageStrategy_endpoint: ""
+hybris_media_globalSettings_s3MediaStorageStrategy_bucketId: ""
+hybris_media_globalSettings_s3MediaStorageStrategy_url_signed: "false"
+
+###############################################################################
+### SOLR SETTINGS #############################################################
+###############################################################################
+#standalone or embedded
+hybris_solr_mode: "embedded"
+
+###############################################################################
+### DISTRIBUTED CACHE SETTINGS ################################################
+###############################################################################
+hybris_cache_redis_enabled: "false"
+hybris_cache_redis_host: ""
+hybris_cache_redis_port: "6379"

@@ -1,0 +1,7 @@
+---
+- name: Restart solr service
+  service:
+    name=solr
+    state=restarted
+  when: docker == false
+

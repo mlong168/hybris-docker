@@ -1,0 +1,62 @@
+---
+docker: true
+vm_name: hybris
+path: /opt/rccl-tourtrek
+git_url: https://SA_ROYALGIT:75M265puJ8dYKFnP5zG4@keystone.roundarch.com/stash/scm/roylcarib/rccl-tourtrek.git
+git_branch: develop
+server_restart_command: sv restart {{ app_name }}
+vm_os: phusion/ubuntu-14.04-amd64
+cloud_provider: None
+environments:
+  - development
+env: dev
+server_name: localhost
+
+base_install: false
+java_install: false
+mysql_provision: false
+redis_provision: false
+solr_provision: false
+cis_provision: false
+hybris_provision: true
+java_install_local: false
+hybris_provision_local: false
+build_local: false
+solr_build_local: false
+
+databases:
+  - mysql
+  - redis
+
+app_name: '{{ vm_name }}'
+user_name: '{{ "vagrant" if target == "virtualbox" else app_name }}'
+group_name: '{{ user_name }}'
+
+user_home_path: '/home/{{ user_name }}'
+
+ssl_certificate_path: /etc/nginx/ssl/{{ server_name }}.crt
+ssl_certificate_key_path: /etc/nginx/ssl/{{ server_name }}.key
+
+app_path: '{{ path if target == "virtulbox" else "{{ path }}/current" }}'
+app_config_path: "{{ app_path }}/hybris/config"
+app_temp_path: "{{ app_path }}/temp"
+app_logs_path: "{{ app_path }}/hybris/log"
+
+releases_path: '{{ path }}/releases'
+shared_path: '{{ path }}/shared'
+
+use_apt_proxy: false
+
+cloudwatch_dir: /usr/local
+aws_credential_file_src: .gobe-np
+aws_credential_file_dest: "{{cloudwatch_dir}}/aws-scripts-mon/awscreds.template"
+
+# Base/Common settings 
+
+ami_build: ami is defined and ami 
+not_ami_build: ami is not defined or not ami
+
+ntp_service_name: ntp
+ssh_service_name: ssh
+rc_local_path: /etc/rc.local
+

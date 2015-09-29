@@ -1,0 +1,39 @@
+---
+
+- name: Add solr user
+  user: name=solr comment="Solr User" uid=1056 home={{ solr_installation_dir }}
+  tags: build
+
+- name: Set permissions on solr directory
+  file:
+    path={{ solr_installation_dir }}
+    state=directory
+    owner=solr
+    group=solr
+    recurse=yes
+  tags: build
+
+# services start
+
+- name: Add solr init.d script
+  template:
+    src=init.d-template.j2
+    dest=/etc/init.d/solr
+    owner=root
+    group=root
+    mode=0755
+  tags: service
+
+- name: Enable solr service
+  service:
+    name=solr
+    enabled={{ 'yes' if solr_enable else 'no'  }}
+  tags: service
+
+- name: Start solr service
+  sudo: yes
+  sudo_user: solr
+  service:
+    name=solr
+    state={{ 'started' if solr_enable else 'stopped'  }}
+  tags: service

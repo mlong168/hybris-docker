@@ -1,0 +1,149 @@
+---
+
+- name: Install hybris package dependencies
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - npm
+    - nodejs-legacy
+    - bash-completion
+    - s3cmd
+    - maven
+  when: ansible_distribution == 'Ubuntu'
+  tags: local_conf
+
+- name: Setup node.js
+  command: "{{ item }}"
+  with_items:
+    - npm install -g gulp
+    - npm install map-stream
+    - npm install node-sass
+  tags: local_conf
+
+- name: Copy maven global settings template
+  template:
+    src=settings_xml.j2
+    dest=/etc/maven/settings.xml
+    owner=root
+    group=root
+    mode=0644
+  tags: local_conf
+
+#- name: Copy maven global settings 
+# copy: src=settings.xml dest=/etc/maven/ owner=root group=root mode=0644
+# tags: local_conf
+  
+- name: Create temp directory
+  file:
+    path={{ hybris_temp_dir }}
+    state=directory
+    owner=root
+    group=root
+    mode=0755
+  tags: local_conf
+
+- name: Copy s3 configuration
+  copy: src=.s3cfg dest=~/ owner=root group=root mode=0600
+  tags: local_conf
+
+- name: Download hybris local_conf from S3
+  command: "{{ item }}"
+  with_items:
+    - s3cmd get --skip-existing --no-check-md5 --no-encrypt {{ hybris_s3_object }} {{ hybris_temp_dir }}
+  when: hybris_s3_file |default(false)
+  tags: local_conf
+
+- name: get RDS instance facts
+  rds: 
+    aws_access_key={{ lookup('env', 'AWS_ACCESS_KEY_ID') }}
+    aws_secret_key={{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}
+    command=facts 
+    instance_name={{ rds_instance_name }} 
+    region={{ region }}
+  when: rds_db_enable |default(False)
+  register: rds
+  tags: local_conf
+
+- name: Add hybris configuration
+  template:
+    src=local_properties.j2
+    dest={{ hybris_conf_file }}
+    owner=root
+    group=root
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: local_conf
+
+- name: Add hybris cis configuration
+  template:
+    src=cispayment_properties.j2
+    dest={{ hybris_cis_conf_file }}
+    owner=root
+    group=root
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: local_conf
+
+- name: Add default_properties.j2
+  template:
+    src=default_properties.j2
+    dest={{ hybris_default_properties }}
+    owner=root
+    group=root
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: local_conf
+
+- name: Add payment-subscription_properties.j2
+  template:
+    src=payment-subscription_properties.j2
+    dest={{ hybris_payment_subscription_properties }}
+    owner=root
+    group=root
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: local_conf
+
+- name: Add production-profile_properties.j2
+  template:
+    src=production-profile_properties.j2
+    dest={{ hybris_production_profile_properties }}
+    owner=root
+    group=root
+    mode=0644
+  when: hybris_enable |default(False)
+  tags: local_conf
+
+- name: Set ANT_HOME environment variable
+  lineinfile: dest=/etc/environment regexp='^ANT_HOME.*' line='ANT_HOME=/opt/rccl-tourtrek-{{ env }}/build/lib/apache-ant-1.9.1' insertbefore='^PATH.*'
+  tags: local_conf
+
+- name: Set ANT_OPTS envrionment variable
+  lineinfile: dest=/etc/environment regexp='^ANT_OPTS.*' line='ANT_OPTS="-Xmx200m -XX:MaxPermSize=128M"' insertbefore='^PATH.*'
+  tags: local_conf
+
+- name: Set PLATFORM_HOME envrionment variable
+  lineinfile: dest=/etc/environment regexp='^PLATFORM_HOME.*' line='PLATFORM_HOME=/opt/rccl-tourtrek-{{ env }}/hybris/bin/platform' insertbefore='^PATH.*'
+  tags: local_conf
+
+- name: Add Ant binaries to PATH environment variable
+  lineinfile: dest=/etc/environment state=present backrefs=yes regexp='PATH=(["]*)((?!.*?/opt/rccl-tourtrek-{{ env }}/build/lib/apache-ant-1.9.1/bin).*?)(["]*)$' line="PATH=\1\2:/opt/rccl-tourtrek-{{ env }}/build/lib/apache-ant-1.9.1/bin\3"
+  tags: local_conf
+
+- name: Create DB driver dir
+  file: path={{ hybris_mysql_lib_dir }} state=directory
+  tags: local_conf
+
+- name: Add hybris mysql driver
+  copy: src={{ hybris_mysql_lib_dir }} dest={{ hybris_mysql_lib_dir }} owner=root group=root mode=0644 
+  tags: local_conf
+
+- name: Set permissions on hybris directory
+  file:
+    path={{ hybris_home_dir }}
+    state=directory
+    owner=jenkins
+    group=jenkins
+    recurse=yes
+  when: hybris_enable |default(False)
+  tags: local_conf
+

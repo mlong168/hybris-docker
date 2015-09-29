@@ -1,0 +1,43 @@
+---
+
+- name: jetty | ensures jetty directory structure exists at {{solr_installation_dir}}
+  copy:
+    src="{{solr_local_dir}}/example/{{item}}/"
+    dest="{{solr_installation_dir}}/{{item}}/"
+  with_items:
+    - contexts
+    - etc
+    - resources
+    - lib
+    - webapps
+    - solr-webapp
+
+- name: jetty | ensures solr-jetty-context.xml has compactPath setup
+  lineinfile:
+    dest="{{solr_installation_dir}}/contexts/solr-jetty-context.xml"
+    insertafter='<Set name="contextPath"><SystemProperty name="hostContext" default="/solr"/></Set>'
+    line='<Set name="compactPath">true</Set>'
+    state=present
+
+- name: jetty | ensures start.jar exists at {{solr_installation_dir}}
+  copy:
+    src="{{solr_local_dir}}/example/start.jar"
+    dest="{{solr_installation_dir}}/start.jar"
+    mode=0700
+
+- name: jetty | ensures {{solr_log_dir}} exists
+  file:
+    path="{{solr_log_dir}}"
+    state=directory
+    mode=0755
+
+- name: jetty | ensures log4j.properties exists at {{solr_installation_dir}}/resources
+  template:
+    src="log4j.properties.j2"
+    dest="{{solr_installation_dir}}/resources/log4j.properties"
+
+- name: jetty | ensures solr.sh startup script exists at {{solr_installation_dir}}
+  template:
+    src="jetty/solr.sh.j2"
+    dest="{{solr_installation_dir}}/solr.sh"
+    mode=0700

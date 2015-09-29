@@ -1,0 +1,5 @@
+#!/bin/sh
+
+USER=redis
+
+exec chpst -u $USER -o 500000 /usr/bin/redis-server /etc/redis/redis.conf

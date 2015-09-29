@@ -1,0 +1,123 @@
+---
+
+### Hybris Settings ###
+hybris_home_dir: /Users/{{ lookup('env','USER') }}/Documents/rccl-tourtrek
+ant_profile: /Users/{{ lookup('env','USER') }}/.bash_profile
+hybris_init_db:   True
+hybris_update_db: False
+hybris_ant_clean: True
+checkout_branch: True
+branch: 'develop'
+hybris_master_blaster: localhost
+clone_repo: False
+hybris_initd_service: false
+hybris_runit_dir: "/etc/service/hybris"
+deploy_cis_war: false
+hybris_vagrant_file: False
+hybris_s3_file: True
+hybris_install_archive: False
+java_install: false
+base_install: false
+npm_install: False
+solr_build_local: true
+
+# Maven Setting
+maven_version: 3.3.3
+maven_url: http://www.apache.org/dist/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz
+maven_prefix: /usr/local
+maven_dir: "{{ maven_prefix }}/apache-maven-{{ maven_version }}"
+
+# General Config Settings
+
+hybris_website_tourtrek_http: "http://{{ env }}.gobe.com"
+hybris_website_tourtrek_https: "https://{{ env }}.gobe.com"
+hybris_media_tourtrek_http: "http://{{ env }}.gobe.com"
+hybris_media_tourtrek_https: "https://{{ env }}.gobe.com"
+
+hybris_gateway_uri: "http://dockerhost:8080"
+hybris_tomcat_javaoptions: ""
+# -----------------------------------------------------------------------
+# CIS PAYMENT INTEGRATION
+#
+hybris_payment_client_endpoint_uri: "http://dockerhost:8080/paymentService-web/psp/paymentService/"
+
+# CIS Payment endpoint configuration (external cis)
+hybris_paymentService_host: "dockerhost"
+hybris_paymentService_port: "8080"
+hybris_payment_client_endpoint_uri: "http://dockerhost:8080/ttCybersourceCisPaymentService-web/psp/ttCybersourceCisPaymentService/"
+
+# CyberSource Endpoint
+
+hybris_cybersource_sop_response_url: "https://dockerhost/checkout/multi/cybersource-payment-method/response"
+
+# Database Options
+
+hybris_db_url: "jdbc:mysql://dockerhost/hybris?useConfigs=maxPerformance"
+hybris_db_driver: "com.mysql.jdbc.Driver"
+hybris_db_username: "hybris"
+hybris_db_password: "hybris"
+hybris_mysql_tabletype: "InnoDB"
+hybris_mysql_allow_fractional_seconds: "true"
+hybris_db_tableprefix: ""
+hybris_db_customsessionsql: "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;"
+hybris_mysql_optional_tabledefs: "CHARSET=utf8 COLLATE=utf8_bin"
+
+
+# Cluster Config
+#hybris_clustermode: "false"
+#hybris_cluster_maxid: 3
+#hybris_cluster_broadcast_methods: "jgroups"
+#hybris_cluster_broadcast_method_jgroups: "de.hybris.platform.cluster.jgroups.JGroupsBroadcastMethod"
+#hybris_cluster_broadcast_method_jgroups_tcp_bind_addr: "{{ ansible_eth0.ipv4.address }}"
+#hybris_cluster_broadcast_method_jgroups_tcp_bind_port: 7800
+#hybris_cluster_broadcast_method_jgroups_channel_name: "hybris-broadcast"
+#hybris_cluster_broadcast_method_jgroups_configuration: "jgroups-tcp.xml"
+
+# CIS Payments Settings
+hybris_single_ttCybersourceCisPaymentService_merchantId: tourtrek_sezc_ltd
+
+hybris_single_ttCybersourceCisPaymentService_transactionKey: E/oLokybcN/2bU/TV2IyQA+YYzOU6uKDJ21Q4wU1Yebdu7NlQYL93VlW9ajTR8L00L9IN5T8X7gefAhFcLCNnALg5dVBzAsDUXSfL8KZwtcyBS2S5li2uqHy1ZoupBCKm6LYUYtdD7jr4dvDPdijbvAqB91Iwj+ma6WcvhCRBmMDjSEyO+j8o9ZuVIuX1sZda4t2EbM8eepc0pnhD4M2phNwx6Hi2QXuBiIeIyK4t4fMEW7efnvMmq4QpWkvPWzDEMHyYnaeVB1M5dp+tlwe0GlymdrQqBSwxOXmZ4vTWV3wOuDgvwymZupOnfSSlZP6NQLk7xkGhCuU8huga0QK0Q==
+
+hybris_cis_cybersource_webservice_uri: https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor
+
+hybris_cis_cybersource_payment_service_hpf_path: https://testsecureacceptance.cybersource.com/silent/token/create
+
+# Cybersource Settings
+hybris_cybersource_ondemand_query_merchant_id: tourtrek_sezc_ltd
+hybris_cybersource_ondemand_query_username: rccl_report_user
+hybris_cybersource_ondemand_query_password: RcclR3p0rtUs3r
+
+hybris_cybersourceaddon_token_profile_secret_key: be031b90dd144af1997c59af34308d6a2fcd4083a031456eaf60085e5922acb7e0719419525e47d389e4f3994b7d0a4c3e758f773986432cb3c492f964a058c0a9b1fb41adc04c6ea7ca0c0b5f43b50c51822631a4a44b3fa2e0f40c2eaf827dd4928a3c29a44f8caaf1f52bea994de9f16e88ee86af426c82b0c4e53fe6e8c6
+hybris_cybersourceaddon_token_profile_access_key: 795eed57525a36aa9c54266c0af26fe9
+hybris_cybersourceaddon_token_profile_profile_id: CC6333B7-25D8-4FBB-9FD3-D38E0C83FBBA
+
+hybris_cybersourceaddon_checkout_profile_secret_key: be031b90dd144af1997c59af34308d6a2fcd4083a031456eaf60085e5922acb7e0719419525e47d389e4f3994b7d0a4c3e758f773986432cb3c492f964a058c0a9b1fb41adc04c6ea7ca0c0b5f43b50c51822631a4a44b3fa2e0f40c2eaf827dd4928a3c29a44f8caaf1f52bea994de9f16e88ee86af426c82b0c4e53fe6e8c6
+hybris_cybersourceaddon_checkout_profile_access_key: 795eed57525a36aa9c54266c0af26fe9
+hybris_cybersourceaddon_checkout_profile_profile_id: CC6333B7-25D8-4FBB-9FD3-D38E0C83FBBA
+
+hybris_cybersourceaddon_merchant_id: tourtrek_sezc_ltd
+hybris_cybersource_sop_request_url: https://testsecureacceptance.cybersource.com/silent/token/create
+
+###############################################################################
+### MAIL SETTINGS #############################################################
+###############################################################################
+hybris_mail_smtp_server: smtp.mandrillapp.com
+hybris_mail_smtp_port: 587
+hybris_mail_smtp_user: matthew.long@isobar.com
+hybris_mail_smtp_password: xNS4l5fjdNYI6AwSnJ-8zQ
+
+hybris_mail_smtp_starttls_enabled: true
+
+# Required for MailUtils.getPreConfiguredEmail() but are usually overriden by code:
+hybris_mail_from: gobe-support@tourtrek.com
+hybris_mail_replyto: gobe-no-reply@tourtrek.com
+
+###############################################################################
+### DISTRIBUTED CACHE SETTINGS ################################################
+###############################################################################
+hybris_cache_redis_enabled: true
+hybris_cache_redis_host: "dockerhost"
+hybris_cache_redis_port: 6379
+
+### Solr Options ###
+hybris_solr_mode: "standalone"

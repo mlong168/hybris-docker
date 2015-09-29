@@ -1,0 +1,55 @@
+---
+- name: Ubuntu | Set hybris_loaded_distribution
+  set_fact:
+    hybris_loaded_distribution: "{{ ansible_distribution }}"
+
+- name: Install hybris package dependencies
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - npm
+    - nodejs-legacy
+    - s3cmd
+    - unzip
+    - git-core
+  when: ansible_distribution == 'Ubuntu'
+  tags: build
+
+- name: Setup node.js
+  command: "{{ item }}"
+  with_items:
+    - npm install -g gulp
+    - npm install map-stream
+    - npm install node-sass
+  when: npm_install |default(False)
+  tags: build
+
+- name: Make sure the known hosts file exists
+  file: "path={{ ssh_known_hosts_file }} state=touch"
+  tags: ssh
+
+- name: Check host name availability
+  shell: "ssh-keygen -f {{ ssh_known_hosts_file }} -F {{ item }}"
+  with_items: ssh_known_hosts
+  register: ssh_known_host_results
+  ignore_errors: yes
+  tags: ssh
+
+- name: Scan the public key
+  shell: "{{ ssh_known_hosts_command}} {{ item.item }} >> {{ ssh_known_hosts_file }}"
+  with_items: ssh_known_host_results.results
+  when: item.stdout == ""
+  tags: ssh
+
+- name: Scan the public key with ports
+  shell: "{{ ssh_known_hosts_port_command}} {{ item.item }} >> {{ ssh_known_hosts_file }}"
+  with_items: ssh_known_host_results.results
+  when: item.stdout == ""
+  tags: ssh
+
+- name: Copy maven global settings
+  copy: src=settings.xml dest=/etc/maven/ owner=root group=root mode=0644
+  tags: build
+
+- name: Copy maven global settings
+  copy: src=settings.xml dest={{ maven_prefix }}/apache-maven-{{ maven_version }}/conf/ owner=root group=root mode=0644
+  tags: build

@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_version '>= 1.7'
+
+Vagrant.configure('2') do |config|
+  config.vm.provider :virtualbox do |vb, override|
+    vb.gui = false
+    host = RbConfig::CONFIG["host_os"]
+
+    if host =~ /darwin/ # OS X
+      # sysctl returns bytes, convert to MB
+      vb.memory = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 3
+      vb.cpus = `sysctl -n hw.ncpu`.to_i
+    elsif host =~ /linux/ # Linux
+      # meminfo returns kilobytes, convert to MB
+      vb.memory = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 2
+      vb.cpus = `nproc`.to_i
+    end
+
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+  end
+
+  config.vm.define 'default' do |machine|
+    machine.vm.hostname = 'dockerhost'
+  end
+
+  config.ssh.forward_agent = true
+  config.vm.provision 'docker'
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.box = 'phusion/ubuntu-14.04-amd64'
+  config.vm.network 'private_network', ip: '192.168.20.50'
+  config.vm.boot_timeout = 30
+
+  #This next bit fixes the 'stdin is not a tty' error when shell provisioning Ubuntu boxes
+  config.vm.provision :shell,
+    #if there a line that only consists of 'mesg n' in /root/.profile, replace it with 'tty -s && mesg n'
+    :inline => "(grep -q -E '^mesg n$' /root/.profile && sed -i 's/^mesg n$/tty -s \\&\\& mesg n/g' /root/.profile && echo 'Ignore the previous error about stdin not being a tty. Fixing it now...') || exit 0;"
+
+  # Need to set ulimit -n 1024 because of apt-get bug
+  # https://bugs.launchpad.net/ubuntu/+source/apt/+bug/1332440
+  config.vm.provision 'shell', :inline =>
+    "sed -i 's/limit nofile \([0-9]*\) \([0-9]*\)/limit nofile 1024 2048/' /etc/init/docker.conf &&
+      stop docker &&
+      sleep 5 &&
+      start docker"
+
+  # The following line terminates all ssh connections. Therefore
+  # Vagrant will be forced to reconnect.
+  # That's a workaround to have the docker command in the PATH
+  config.vm.provision "shell", :inline =>
+    "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+end

@@ -1,0 +1,183 @@
+---
+# Main list of tasks to be executed.
+#
+#   Fail the play if it runs on an unsupported platform.
+- name: Assert platform is supported
+  tags: tomcat
+  assert:
+    that:
+      - ansible_os_family in tomcat_supported_platforms
+
+- name: Load version vars
+  tags: tomcat
+  with_first_found:
+    - ../vars/versions/{{ tomcat_version }}.yml
+    - ../vars/versions/default.yml
+  include_vars: "{{ item }}"
+
+- name: Assert version vars
+  tags: tomcat
+  assert:
+    that:
+      - tomcat_redis_sha256sum not in (None, "")
+
+- include: local.yml
+  tags: tomcat
+
+
+- name: Install remote ansible data path directory
+  tags: tomcat
+  sudo: yes
+  file:
+    state=directory
+    dest={{ remote_ansible_data_path }}
+
+
+- name: Create Tomcat group
+  tags: tomcat
+  sudo: yes
+  group:
+    state=present
+    name={{ tomcat_user_group }}
+
+- name: Create Tomcat user
+  tags: tomcat
+  sudo: yes
+  user:
+    state=present
+    name={{ tomcat_user_name }}
+    home={{ tomcat_user_home }}
+    group={{ tomcat_user_group }}
+    createhome=yes
+    comment="Tomcat service user"
+
+
+- name: Copy Tomcat distribution
+  tags: tomcat
+  sudo: yes
+  copy:
+    src={{ local_ansible_data_path }}/{{ tomcat_redis_filename }}
+    dest={{ remote_ansible_data_path }}/{{ tomcat_redis_filename }}
+    owner=0
+    group=0
+    mode=0644
+
+
+- name: Install catalina home directory
+  tags: tomcat
+  sudo: yes
+  file:
+    state=directory
+    dest={{ tomcat_env_catalina_home }}
+    owner=0
+    group=0
+    mode=0755
+
+- name: Extract Tomcat installation files to catalina home
+  tags: tomcat
+  sudo: yes
+  command: tar
+      -xzf {{ remote_ansible_data_path }}/{{ tomcat_redis_filename }}
+      -C {{ tomcat_env_catalina_home }}
+      --strip-components 1
+    creates={{ tomcat_env_catalina_home }}/lib
+
+- name: Install catalina base directory and sub dirs
+  tags: tomcat
+  sudo: yes
+  with_items:
+    - conf
+    - logs
+    - webapps
+    - temp
+    - pid
+  file:
+    state=directory
+    dest={{ tomcat_env_catalina_base }}/{{ item }}
+    owner={{ tomcat_user_name }}
+    group={{ tomcat_user_group }}
+    mode=0755
+
+- name: Copy manager applications to webapps
+  tags: tomcat
+  sudo: yes
+  with_items:
+    - manager
+    - host-manager
+  command: cp
+      -R {{ tomcat_env_catalina_home }}/webapps/{{ item }} {{ tomcat_env_catalina_base }}/webapps/
+
+- file: path={{ tomcat_env_catalina_base }} owner={{ tomcat_user_name }} group={{ tomcat_user_group }} recurse=yes
+
+- name: Register conf files to be installed
+  tags: tomcat
+  register: tomcat_conf_files
+  command: ls -1 --ignore=server.xml {{ tomcat_env_catalina_home }}/conf
+
+- name: Install conf files
+  tags: tomcat
+  sudo: yes
+  with_items: tomcat_conf_files.stdout_lines
+  command: install
+      --owner {{ tomcat_user_name }}
+      --group {{ tomcat_user_group }}
+      --mode 0640
+      {{ tomcat_env_catalina_home }}/conf/{{ item }}
+      {{ tomcat_env_catalina_base }}/conf/{{ item }}
+    creates={{ tomcat_env_catalina_base }}/conf/{{ item }}
+
+- name: Install server configuration
+  tags: tomcat
+  sudo: yes
+  template:
+    src={{ tomcat_server_xml_template }}
+    dest={{ tomcat_env_catalina_base }}/conf/server.xml
+    owner={{ tomcat_user_name }}
+    group={{ tomcat_user_group }}
+    mode=0640
+
+- name: Install tomcat user configuration
+  tags: tomcat
+  sudo: yes
+  template:
+    src={{ tomcat_users_xml_template }}
+    dest={{ tomcat_env_catalina_base }}/conf/tomcat-users.xml
+    owner={{ tomcat_user_name }}
+    group={{ tomcat_user_group }}
+    mode=0640
+  when: tomcat_users_xml_template is defined
+
+# Install a tomcat service
+- include: service_systemd.yml
+  tags: tomcat
+  sudo: yes
+  when: ansible_distribution == 'Archlinux'
+
+- include: service_upstart.yml
+  tags: tomcat
+  sudo: yes
+  when: upstart == 'yes'
+
+- include: service_init.yml
+  tags: tomcat
+  sudo: yes
+  when: sysvinit == 'yes'
+
+- include: service_runit.yml
+  tags: tomcat
+  sudo: yes
+  when: runit == 'yes'
+
+- include: service_sysvinit.yml
+  tags: tomcat
+  sudo: yes
+  when: ansible_distribution == 'Debian' or ansible_os_family == 'RedHat'
+
+- name: Ensure tomcat service
+  tags: tomcat
+  sudo: yes
+  service:
+    state=started
+    enabled=true
+    name={{ tomcat_service_name }}
+  when: sysvinit == 'yes'

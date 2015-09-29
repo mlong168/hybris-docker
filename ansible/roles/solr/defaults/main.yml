@@ -1,0 +1,153 @@
+---
+
+solr_action: install
+solr_action_core: install_core
+solr_enable: no
+
+###########
+# VERSION #
+###########
+solr_version: 4.9.0
+solr_package: 'solr-{{solr_version}}.tgz'
+
+# here, you put the value that would go at -Dsolr.solr.home
+solr_installation_dir: '/opt/solr'
+
+#everything that will be downloaded will go here, so we don't need to download the same package over and over at each guest machine.
+solr_download_dir: '/tmp'
+solr_local_dir: '{{solr_download_dir}}/solr-{{solr_version}}'
+
+solr_log_level: 'INFO'
+solr_download_url: 'https://archive.apache.org/dist/lucene/solr/{{solr_version}}/{{solr_package}}'
+
+#############
+# CONTAINER #
+#############
+
+solr_container: 'jetty'
+solr_service_name: 'solr'
+
+# yes or no
+solr_oracle_jdk: 'no'
+
+##########
+# COMMIT #
+##########
+
+#soft commit
+solr_commit_soft_max_time: 60000
+
+solr_commit_soft_max_docs: 100
+
+solr_commit_soft_open_searcher: "true"
+
+#hard commit
+solr_commit_hard_max_time: 600000
+
+solr_commit_hard_max_docs: 1000
+
+solr_commit_hard_open_searcher: "true"
+
+solr_max_warming_searchers: 2
+
+#lock type can be native, single, simple, none
+solr_lock_type: native
+
+###############
+# REPLICATION #
+###############
+
+# master, slave, cloud or disabled
+# it is strange to setup solr_replication_mode to cloud, but you shouldn't setup a node as replicated and cloud
+# so it seems good to use the same variable for both
+solr_replication_mode: 'disabled'
+
+#there isn't a good default value for the master url, and you must configure it for your slave instances
+solr_replication_master_url: none
+
+#slave poll interval in HH:mm:ss
+solr_replication_poll_interval: '00:01:00'
+
+#config files wich solr master will replicate to slaves
+solr_replication_config_files: 'schema.xml'
+
+#########
+# CLOUD #
+#########
+# true or false
+solr_cloud_zookeeper_embedded: false
+# comma separated list of zookeeper hosts
+#solr_cloud_zookeeper_host: none
+#solr_cloud_num_shards: 2
+#solr_cloud_collection_boostrap_dir: './solr/collection1/conf'
+#solr_cloud_collection_config_name: myconf
+
+solr_log_level: INFO
+
+#if you need to keep your data dir outside solr.home, use this property to setup it. You will a <external_data_dir_path>/<collection_name>/ structure
+#solr_external_data_dir: '/www/solr/data'
+
+##############
+# DATAIMPORT #
+##############
+
+#do you use dataimport handler? point here where the will be avaiable at the remote host
+#solr_dataimport_config: 
+
+################
+# DEPENDENCIES #
+################
+# here, you list the folder you use to import dependency libs for solr
+solr_lib_dir: '{{solr_installation_dir}}/lib'
+
+# Solr Shared lib directory
+solr_shared_lib_dir: '{{solr_installation_dir}}/hybris'
+   
+#here, you list jar files you want to include on your classpath
+#solr_lib_paths: ['/path/to/some_lib.jar']
+
+#solr data dir
+solr_data_dir: '{{solr_installation_dir}}/{{solr_core_name}}/data'
+
+#should solr unlock index when it is started?
+solr_unlock_on_startup: "true"
+
+####################
+# POST COMMIT HOOK #
+####################
+
+#post commit hook should execute which program, if any?
+# all the other post commit configs will be used only if there's a solr_post_commit_exe configured
+#solr_post_commit_exe: '/usr/bin/curl'
+solr_post_commit_dir: .
+solr_post_commit_wait: "true"
+#solr_post_commit_args: ['arg1', 'arg2']
+#solr_post_commit_env: [
+#  {key: 'ENV1', value: 'VALUE_OF_ENV1'},
+#  {key: 'ENV2', value: 'VALUE_OF_ENV2'},
+
+#########
+# CACHE #
+#########
+
+solr_filter_cache_size: 512
+solr_filter_cache_intial_size: 512
+solr_filter_cache_auto_warm_count: 0
+
+solr_query_result_cache_size: 512
+solr_query_result_cache_intial_size: 512
+solr_query_result_cache_auto_warm_count: 0
+
+solr_document_cache_size: 512
+solr_document_cache_intial_size: 512
+solr_document_cache_auto_warm_count: 0
+
+###########
+# LOGGING #
+###########
+solr_log_dir: "{{solr_installation_dir}}/logs"
+solr_log_max_file_size: '40MB'
+solr_log_max_backup_index: 10
+
+solr_java_opts: '-server -Djava.awt.headless=true'
+solr_port: 8983

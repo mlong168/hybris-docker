@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: John Goodall
+  description: An Ansible role for installing Maven 3.
+  company: Oak Ridge National Laboratory
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: Debian
+    versions:
+    - 7
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - system
+#dependencies:
+# - { role: smola.java, java_packages: [oracle-java7-installer, oracle-java7-set-default] }
+

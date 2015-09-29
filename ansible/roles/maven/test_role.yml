@@ -1,0 +1,14 @@
+---
+
+- name: test maven role
+  hosts: all
+  sudo: yes
+
+  vars_files:
+    - 'defaults/main.yml'
+    
+  tasks:
+    - include: 'tasks/main.yml'
+
+  roles:
+    - { role: smola.java, java_packages: [oracle-java7-installer, oracle-java7-set-default] }

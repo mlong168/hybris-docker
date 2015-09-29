@@ -1,0 +1,21 @@
+---
+# additional packages to install on all hosts
+additionalPackages: []
+
+# packages held from auto update
+heldPackages:
+  - "libmysqlclient-dev"
+  - "linux-*"
+  - "solr*"
+  - "nginx*"
+  - "logstash*"
+  - "kibana*"
+  - "elasticsearch*"
+  - "consul*"
+  - "tomcat*"
+
+# your email address
+adminEmail: "matthew.long@isobar.com"
+
+# system timezone
+timezone: "Etc/UTC"

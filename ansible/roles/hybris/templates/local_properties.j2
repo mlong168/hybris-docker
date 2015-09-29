@@ -1,0 +1,526 @@
+###############################################################################
+### !!! ATTENTION !!! #########################################################
+###############################################################################
+# place properties into this file instead of modifying the project.properties #
+# they have higher priority and will overwrite every project.properties       #
+###############################################################################
+
+
+###############################################################################
+### LOGGING SETTINGS ##########################################################
+###############################################################################
+ondemand.slf4jbridge.activated=true
+hybris.rest.client.logging.enabled=true
+###############################################################################
+
+
+###############################################################################
+### CLUSTER SETTINGS ##########################################################
+###############################################################################
+
+
+{% if cluster_enabled == 'true' %}
+clustermode={{ hybris_clustermode }}
+cluster.id={{ hybris_cluster_id }}
+cluster.maxid={{ hybris_cluster_maxid }}
+cluster.broadcast.methods={{ hybris_cluster_broadcast_methods }}
+cluster.broadcast.method.jgroups={{ hybris_cluster_broadcast_method_jgroups }}
+cluster.broadcast.method.jgroups.tcp.bind_addr={{ hybris_cluster_broadcast_method_jgroups_tcp_bind_addr }}
+cluster.broadcast.method.jgroups.tcp.bind_port={{ hybris_cluster_broadcast_method_jgroups_tcp_bind_port }}
+cluster.broadcast.method.jgroups.channel.name={{ hybris_cluster_broadcast_method_jgroups_channel_name }}
+cluster.broadcast.method.jgroups.configuration={{ hybris_cluster_broadcast_method_jgroups_configuration }}
+{% endif %}
+
+
+{% if cluster_enabled == 'false' %}
+clustermode=false
+{% endif %}
+
+###############################################################################
+
+
+###############################################################################
+### JVM SETTINGS ##############################################################
+###############################################################################
+java.mem={{ hybris_java_mem }}
+cache.main={{ hybris_cache_main }}
+java.permSize={{ hybris_java_permSize }}
+###############################################################################
+
+
+###############################################################################
+### TOMCAT SETTINGS ###########################################################
+###############################################################################
+tomcat.development.mode={{ hybris_tomcat_development_mode }}
+
+tomcat.http.port={{ hybris_tomcat_http_port }}
+tomcat.ssl.port={{ hybris_tomcat_ssl_port }}
+
+tomcat.maxthreads=200
+tomcat.minsparethreads=50
+tomcat.maxidletime=10000
+tomcat.acceptcount=100
+
+tomcat.generaloptions=-Xmx${java.mem} -Xms${java.mem} -XX:PermSize=${java.permSize} -XX:MaxPermSize=${java.permSize} -Xss256K -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=75 -XX:+CMSClassUnloadingEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:+CMSParallelRemarkEnabled -XX:+ParallelRefProcEnabled -XX:+CMSScavengeBeforeRemark  -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:"${HYBRIS_LOG_DIR}/tomcat/java_gc.log" -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dorg.tanukisoftware.wrapper.WrapperManager.mbean=true -Djava.endorsed.dirs=../lib/endorsed -Dcatalina.base=%CATALINA_BASE% -Dcatalina.home=%CATALINA_HOME% -Dfile.encoding=UTF-8 -Dlog4j.configuration=log4j_init_tomcat.properties -Djava.util.logging.config.file=jdk_logging.properties -Djava.io.tmpdir="${HYBRIS_TEMP_DIR}" -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000
+
+#put your additional java options here
+tomcat.javaoptions={{ hybris_tomcat_javaoptions }}
+tomcat.debugjavaoptions=-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8002,suspend=n
+###############################################################################
+
+
+###############################################################################
+### DB SETTINGS ###############################################################
+###############################################################################
+
+{% if mysql_enabled == 'true' %}
+db.url={{ hybris_db_url }}
+db.username={{ hybris_db_username }}
+db.password={{ hybris_db_password }}
+
+db.tableprefix={{ hybris_db_tableprefix }}
+db.customsessionsql={{ hybris_db_customsessionsql }}
+db.driver={{ hybris_db_driver }}
+
+mysql.tabletype={{ hybris_mysql_tabletype }}
+mysql.allow.fractional.seconds={{ hybris_mysql_allow_fractional_seconds }}
+mysql.optional.tabledefs={{ hybris_mysql_optional_tabledefs }}
+{% endif %}
+
+{% if mysql_enabled == 'false' %}
+#db.url=jdbc:mysql://hybris.cehvnxmrqppg.us-west-2.rds.amazonaws.com/hybris?useConfigs=maxPerformance&characterEncoding=utf8
+#db.username=
+#db.password=
+
+#db.tableprefix=
+#db.customsessionsql=SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
+#db.pool.maxActive=90
+#db.pool.maxIdle=90
+#db.driver=com.mysql.jdbc.Driver
+
+#mysql.tabletype=InnoDB
+#mysql.allow.fractional.seconds=true
+#mysql.optional.tabledefs=CHARSET=utf8 COLLATE=utf8_bin
+{% endif %}
+
+###############################################################################
+
+
+###############################################################################
+### CACHE REGIONS SETTINGS ####################################################
+###############################################################################
+# Carts
+regioncache.cartregion.size=50000
+regioncache.cartregion.evictionpolicy=LRU
+# Price
+regioncache.priceregion.size=300000
+regioncache.priceregion.evictionpolicy=LRU
+# Product
+regioncache.productregion.size=250000
+regioncache.productregion.evictionpolicy=LRU
+# Stock
+regioncache.stockregion.size=100000
+regioncache.stockregion.evictionpolicy=LRU
+###############################################################################
+
+
+###############################################################################
+### DISTRIBUTED CACHE SETTINGS ################################################
+###############################################################################
+cache.redis.enabled={{ hybris_cache_redis_enabled }}
+cache.redis.host={{ hybris_cache_redis_host }}
+cache.redis.port={{ hybris_cache_redis_port }}
+cache.redis.maxActive=8
+cache.redis.maxIdle=8
+cache.redis.minIdle=0
+cache.redis.lifo=true
+cache.redis.fairness=false
+cache.redis.maxWaitMillis=-1
+cache.redis.minEvictableIdleTimeMillis=1800000
+cache.redis.softMinEvictableIdleTimeMillis=1800000
+cache.redis.numTestsPerEvictionRun=3
+cache.redis.testOnCreate=false
+cache.redis.testOnBorrow=false
+cache.redis.testOnReturn=false
+cache.redis.testWhileIdle=false
+cache.redis.timeBetweenEvictionRunsMillis=-1
+cache.redis.blockWhenExhausted=true
+cache.redis.jmxEnabled=true
+###############################################################################
+
+
+###############################################################################
+### PLATFORM SPECIFIC SETTINGS ################################################
+###############################################################################
+default.pricefactory=tourtrekpricefactory
+installed.tenants=
+
+cache.main=20000
+
+impex.import.workers=8
+
+catalog.sync.workers=4
+
+cronjob.maxthreads=50
+
+build.parallel=false
+
+build.development.mode={{ hybris_build_development_mode }}
+###############################################################################
+
+
+###############################################################################
+### TOURTREK STOREFRONT SETTINGS ##############################################
+###############################################################################
+#   Production: -1
+storefront.resourceBundle.cacheSeconds=1
+
+storefront.btg.enabled=false
+
+tourtrekstorefront.webroot=
+storefrontContextRoot=
+
+tourtrekstorefront.calendar.fileName=MyGoBeExperience
+
+storefront.show.debug.info={{ hybris_storefront_show_debug_info }}
+
+tourtrekstorefront.build.gulp={{ hybris_tourtrekstorefront_build_gulp }}
+tourtrekstorefront.build.gulp.env={{ hybris_tourtrekstorefront_build_gulp_env }}
+
+tourtrekstorefront.affiliatesourcecode.name=source
+
+tourtrekstorefront.debug.emailbody=false
+
+storefront.staticResourceFilter.response.header.X-FRAME-OPTIONS=SAMEORIGIN
+###############################################################################
+
+
+###############################################################################
+### WEB CONTEXT SETTINGS ######################################################
+###############################################################################
+website.tourtrek.http={{ hybris_website_tourtrek_http }}
+website.tourtrek.https={{ hybris_website_tourtrek_https }}
+media.tourtrek.http={{ hybris_media_tourtrek_http }}
+media.tourtrek.https={{ hybris_media_tourtrek_https }}
+###############################################################################
+
+
+###############################################################################
+### COCKPIT SETTINGS ##########################################################
+###############################################################################
+cockpit.default.popUpEditor.allowOverlap=true
+
+cockpit.reports.vjdbc.port=8000
+###############################################################################
+
+
+###############################################################################
+### HMC SETTINGS ##############################################################
+###############################################################################
+hmc.default.autologin=false
+hmc.default.login=
+hmc.default.password=
+
+hmc.debug.showjspcomments=true
+hmc.developermode={{ hybris_hmc_developermode }}
+###############################################################################
+
+
+###############################################################################
+### HAC SETTINGS ##############################################################
+###############################################################################
+hac.webroot=/hac
+classloader.monitor.enabled=true
+###############################################################################
+
+
+###############################################################################
+### MEDIA SETTINGS ############################################################
+###############################################################################
+
+{% if s3_enabled == 'true' %}
+media.default.storage.strategy={{ hybris_media_default_storage_strategy }}
+media.default.url.strategy={{ hybris_media_default_url_strategy }}
+media.globalSettings.s3MediaStorageStrategy.accessKeyId={{ hybris_media_globalSettings_s3MediaStorageStrategy_accessKeyId }}
+media.globalSettings.s3MediaStorageStrategy.secretAccessKey={{ hybris_media_globalSettings_s3MediaStorageStrategy_secretAccessKey }}
+media.globalSettings.s3MediaStorageStrategy.endpoint={{ hybris_media_globalSettings_s3MediaStorageStrategy_endpoint }}
+media.globalSettings.s3MediaStorageStrategy.bucketId={{ hybris_media_globalSettings_s3MediaStorageStrategy_bucketId }}
+media.globalSettings.s3MediaStorageStrategy.url.signed={{ hybris_media_globalSettings_s3MediaStorageStrategy_url_signed }}
+{% endif %}
+
+{% if s3_enabled == 'false' %}
+#media.default.storage.strategy=s3MediaStorageStrategy
+#media.default.url.strategy=localMediaWebURLStrategy
+#media.globalSettings.s3MediaStorageStrategy.accessKeyId=AKIAJWUK2ZZUBPJ7PH4Q
+#media.globalSettings.s3MediaStorageStrategy.secretAccessKey=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
+#media.globalSettings.s3MediaStorageStrategy.endpoint=s3.amazonaws.com
+#media.globalSettings.s3MediaStorageStrategy.bucketId=devhybrismedia
+#media.globalSettings.s3MediaStorageStrategy.url.signed=false
+{% endif %}
+
+
+### CIS SETTINGS ##############################################################
+###############################################################################
+hybris.tenantId=single
+kernel.defaultTenant=single
+cisclient.deployment.mode=onpremise
+# From ondemandcommon/project.properties and corepluscommons/project.properties
+hybris.gateway.uri={{ hybris_gateway_uri }}
+
+## CIS
+cis.clientref=abc
+
+# CIS Mocking switches (true = internal mocks, no rest calls. false = external service call is made.)
+cis.client.avs.mock=true
+cis.client.geolocation.mock=true
+cis.client.fraud.mock=true
+cis.client.payment.mock=false
+cis.client.shipping.mock=true
+cis.client.tax.mock=true
+
+
+# -----------------------------------------------------------------------
+# CIS PAYMENT INTEGRATION
+#
+# CIS Payment Mock endpoint configuration (external cis mocks)
+#payment.client.endpoint.name=mockPaymentService
+#cis.paymentService.endpoint.name=mockPaymentService
+mockPaymentService.context=paymentService-web
+mockPaymentService.rootResourcePath=psp/paymentService
+mockPaymentService.host={{ hybris_mockPaymentService_host }}
+mockPaymentService.port={{ hybris_mockPaymentService_port }}
+
+cis.rest.mock.payment.pspUrl={{ hybris_cis_rest_mock_payment_pspUrl }}
+
+# CIS Payment endpoint configuration (external cis)
+cis.paymentService.endpoint.name=paymentService
+paymentService.host={{ hybris_paymentService_host }}
+paymentService.port={{ hybris_paymentService_port }}
+paymentService.context=ttCybersourceCisPaymentService-web
+paymentService.rootResourcePath=psp/ttCybersourceCisPaymentService
+paymentService.defaultTenant=single
+payment.client.endpoint.uri={{ hybris_payment_client_endpoint_uri }}
+
+# Configuration to interact with the CIS.
+#cispayment.pspUrlStrategy.threadTimeout=666666
+#cispayment.interpretationStrategy.threadTimeout=555555
+cispayment.subscriptionAuthorization.threadTimeout=777777
+
+cispayment.updateSubscription.groupKey=UpdateSubscriptionGroupKey
+cispayment.updateSubscription.threadTimeout=777777
+cispayment.updateSubscription.threadPoolSize=10
+
+cispayment.followOnRefund.groupKey=FollowOnRefundGroupKey
+cispayment.followOnRefund.threadTimeout=777777
+cispayment.followOnRefund.threadPoolSize=10
+
+#cispayment.fraudReport.threadTimeout=888888
+
+
+# The endpoint name serves as prefix for the remaining rest client properties that are consumed by com.hybris.commons.client.StaticEndpointProvider.
+# Optionally, the endpoint name prefix can furthermore be prefixed with a "service prefix" that would to match the service prefix defined for the endpoint provider.
+
+# Maps the CIS service type to the endpoint name
+# cis.[serviceType].endpoint.name=[endpoint name]
+
+# rest path root context (will be the Maven artifact id, aka service name of the CIS web application)
+# [endpoint name].context=[service name]
+
+# rest relative path - service type (avs|tax|fraud|geolocation|shipping|psp) and extension artifact id
+# [endpoint name].rootResourcePath=[service type]/[web application name]
+
+# web server host
+# [endpoint name].host=localhost
+
+# web server port
+# [endpoint name].port=9000
+
+
+cis.paymentService.location=${platformhome}/../../../cis-psp/ttCybersourceCisPaymentService
+cis.paymentService.target.location=${platformhome}/../../../cis-psp/ttCybersourceCisPaymentService/ttCybersourceCisPaymentService-web/target
+cis.paymentService.tomcat.location=${platformhome}/../../../cis/apache-tomcat-7.0.56/webapps/
+#cis.paymentService.subscription.properties.target.location=${cis.paymentService.location}/ttCybersourceCisPaymentService-service/src/main/resources/
+#config.paymentService.subscription.properties=${platformhome}/../../config
+
+cis.ttCybersourceCisPaymentService.payment.from=${platformhome}/../../config/cispayment.properties
+cis.ttCybersourceCisPaymentService.payment.to=${platformhome}/../../../cis-psp/ttCybersourceCisPaymentService/ttCybersourceCisPaymentService-service/src/main/resources/
+
+cis.ttCybersourceCisPaymentService.shared.from=${platformhome}/../../config/default.properties
+cis.ttCybersourceCisPaymentService.shared.to=${platformhome}/../../../cis-psp/ttCybersourceCisPaymentService/ttCybersourceCisPaymentService-shared/src/main/resources/
+
+cis.ttCybersourceCisPaymentService.integration.test.from=${platformhome}/../../config/payment-subscription.properties
+cis.ttCybersourceCisPaymentService.integration.test.to=${platformhome}/../../../cis-psp/ttCybersourceCisPaymentService/ttCybersourceCisPaymentService-integration-test/src/test/resources/
+
+cis.ttCybersourceCisPaymentService.service.from=${platformhome}/../../config/production-profile.properties
+cis.ttCybersourceCisPaymentService.service.to=${platformhome}/../../../cis-psp/ttCybersourceCisPaymentService/ttCybersourceCisPaymentService-service/src/main/resources/
+
+###############################################################################
+
+
+###############################################################################
+### CYBERSOURCE SETTINGS ######################################################
+###############################################################################
+
+# These properties need to be changed based on the EBC account that will be used in the environment 
+
+#
+# The on-demand report data url credentials, to be created in the CyberSource Business Center.
+#
+cybersource.ondemand.query.merchant_id={{ hybris_cybersource_ondemand_query_merchant_id }}
+cybersource.ondemand.query.username={{ hybris_cybersource_ondemand_query_username }}
+cybersource.ondemand.query.password={{ hybris_cybersource_ondemand_query_password }}
+
+# 
+# Profile keys for My Account section, generated in CyberSource Business center, 
+# Tools & Settings -> Secure Acceptance -> Profiles
+#
+cybersourceaddon.token.profile.secret_key={{ hybris_cybersourceaddon_token_profile_secret_key }}
+cybersourceaddon.token.profile.access_key={{ hybris_cybersourceaddon_token_profile_access_key }}
+cybersourceaddon.token.profile.profile_id={{ hybris_cybersourceaddon_token_profile_profile_id }}
+
+# 
+# Profile keys for Checkout section, generated in CyberSource Business Center,  
+# Tools & Settings -> Secure Acceptance -> Profiles
+#
+cybersourceaddon.checkout.profile.secret_key={{ hybris_cybersourceaddon_checkout_profile_secret_key }}
+cybersourceaddon.checkout.profile.access_key={{ hybris_cybersourceaddon_checkout_profile_access_key }}
+cybersourceaddon.checkout.profile.profile_id={{ hybris_cybersourceaddon_checkout_profile_profile_id }}
+
+# 
+# Merchant id account obtained from CyberSource
+#
+cybersourceaddon.merchant.id={{ hybris_cybersourceaddon_merchant_id }}
+
+cybersource.sop.response.url={{ hybris_cybersource_sop_response_url }}
+cybersource.sop.request.url={{ hybris_cybersource_sop_request_url }}
+
+###############################################################################
+
+
+###############################################################################
+### SOLR SETTINGS #############################################################
+###############################################################################
+
+{% if hybris_solr_mode == 'standalone' and aws_enabled |default(False) %}
+solr.mode=standalone
+# standalone SOLR endpoint
+solr.endpoint.url={% for host in groups['tag_solr_role_master'] %}
+   http://{{ hostvars[host]['inventory_hostname'] }}:8983/solr
+{% endfor %}
+{% endif %}
+
+{% if hybris_solr_mode == 'standalone' and docker == 'true' and solr_build_local == 'false' %}
+solr.mode=standalone
+# standalone SOLR endpoint
+solr.endpoint.url=http://{{ hostvars.solr.ansible_ssh_host }}:8983/solr
+{% endif %}
+
+{% if hybris_solr_mode == 'standalone' and docker == 'true' and solr_build_local == 'true' %}
+solr.mode=standalone
+# standalone SOLR endpoint
+solr.endpoint.url=http://dockerhost:8983/solr
+{% endif %}
+
+{% if hybris_solr_mode == 'embedded' %}
+solr.mode=embedded
+{% endif %}
+
+# Change the limit on the number of facet values returned per facet.
+# This needs to be greater than the number of categories in the system.
+facet.limit.default=500
+###############################################################################
+
+
+###############################################################################
+### GOOGLE APIs SETTINGS ######################################################
+###############################################################################
+# Google API key
+googleApiKey=AIzaSyAzCzRhJpU7JdYY8co2JTGKMflSynKx_F8
+
+#version of the google map api
+googleApiVersion=3.7
+
+# This is the (XML format) reverse geocoding URL for version 3 of the
+# Google Maps JavaScript API
+google.geocoding.reverse.url=http://maps.googleapis.com/maps/api/geocode/xml
+
+# Google Analytics Tracking IDs
+#google.analytics.tracking.id=UA-55622540-1
+###############################################################################
+
+###############################################################################
+### MAIL SETTINGS #############################################################
+###############################################################################
+mail.smtp.server={{ hybris_mail_smtp_server }}
+mail.smtp.port={{ hybris_mail_smtp_port }}
+mail.smtp.user={{ hybris_mail_smtp_user }}
+mail.smtp.password={{ hybris_mail_smtp_password }}
+
+mail.smtp.starttls.enabled={{ hybris_mail_smtp_starttls_enabled }}
+
+# Required for MailUtils.getPreConfiguredEmail() but are usually overriden by code:
+mail.from={{ hybris_mail_from }}
+mail.replyto={{ hybris_mail_replyto }}
+
+#mail.pop3.beforesmtp=false
+#mail.pop3.server=
+#mail.pop3.user=
+#mail.pop3.password=
+
+#mail.use.tls=false
+###############################################################################
+
+
+###############################################################################
+### TOUR OPERATOR SETTINGS ####################################################
+touroperator.roster.dayRange=1
+###############################################################################
+
+
+###############################################################################
+### SESSION SETTINGS ##########################################################
+###############################################################################
+# The session timeout (in seconds).
+# If you specify 0 or less, the session will never timeout
+default.session.timeout=1800
+###############################################################################
+
+
+###############################################################################
+### BRONTO EXPORT FILES SETTINGS ##############################################
+###############################################################################
+bronto.export.amazon.connection.name=bronto-export
+bronto.export.amazon.directory.orders.name=Orders
+bronto.export.amazon.directory.customer.name=CustomerContact
+bronto.export.amazon.directory.optin.name=CustomerOptIn
+###############################################################################
+
+
+###############################################################################
+### ORDER FULFILLMENT #########################################################
+###############################################################################
+orderfulfillment.order.export.amazon.connection.name=order-export
+orderfulfillment.order.export.amazon.directory.name=OrderExportProcess
+###############################################################################
+
+
+###############################################################################
+### FINANCE EXPORT SETTINGS ###################################################
+###############################################################################
+finance.export.amazon.connection.name=finance-export
+finance.export.amazon.directory.ordersplaced.name=ordersPlaced
+finance.export.amazon.directory.orderschanged.name=ordersChanged
+finance.export.amazon.directory.refundsissued.name=refundsIssued
+finance.export.amazon.directory.revenuerecognition.name=revenueRecognition
+finance.export.amazon.directory.touroperatorpayments.name=tourOperatorPayments
+###############################################################################
+
+
+###############################################################################
+### INVENTORY EXPORT SETTINGS #################################################
+###############################################################################
+inventory.export.amazon.connection.name=inventory-export
+inventory.export.amazon.directory.inventory=inventory
+###############################################################################
+
+# vim: set ft=yaml:

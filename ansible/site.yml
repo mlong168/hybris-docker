@@ -1,0 +1,37 @@
+---
+- hosts: vm
+  roles:
+    - swap
+
+- hosts: all
+  gather_facts: no
+  roles:
+    - { role: apt_proxy, when: use_apt_proxy }
+
+- hosts: mysql
+  roles:
+    - { role: base, when: base_install, tags: [base] }
+    - { role: mysql, when: mysql_provision, tags: [mysql] }
+
+- hosts: redis
+  roles:
+    - { role: base, when: base_install, tags: [base] }
+    - { role: redis, when: redis_provision, tags: [redis] }
+
+- hosts: solr
+  roles:
+    - { role: base, when: base_install, tags: [base] }
+    - { role: solr, when: solr_provision, tags: [solr] }
+
+- hosts: cis
+  roles:
+    - { role: base, when: base_install, tags: [base] }
+    - { role: oracle_jdk, when: java_install, tags: [java] }
+    - { role: tomcat, when: cis_provision, tags: [tomcat] }
+
+- hosts: hybris
+  roles:
+    - { role: base,  when: base_install, tags: [base] }
+    - { role: java,  when: java_install, tags: [java] }
+    - { role: maven, when: java_install, tags: [maven] }
+    - { role: hybris, when: hybris_provision, tags: [hybris] }

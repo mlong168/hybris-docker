@@ -1,0 +1,41 @@
+---
+# Install networking packages, and utilities
+
+- name: Install networking packages (apt version)
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - dnsutils
+    - openssh-client
+    - openssh-server
+    - ntp
+    - rsync
+    - ssh
+    - tcpdump
+    - telnet
+    - traceroute
+    - postfix
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install networking packages (yum version)
+  yum: pkg={{ item }} state=latest enablerepo=epel
+  with_items:
+    - lynx
+    - openssh-clients
+    - openssh-server
+    - ngrep
+    - ntp
+    - rsync
+    - tcpdump
+    - telnet
+    - traceroute
+  when: ansible_distribution == 'Amazon'
+    
+- name: Make sure rsync is not running as a service
+  service: name=rsync enabled=off
+  when: ansible_distribution == 'Ubuntu'
+  
+- name: Enable NTP service
+  service: name={{ ntp_service_name }} enabled=yes
+
+- name: Starting NTP
+  service: name={{ ntp_service_name }} state=started

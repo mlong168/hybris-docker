@@ -1,0 +1,115 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+options = ENV.has_key?('BUILD_OPTS') ? ENV['BUILD_OPTS'] : "build"
+
+require 'yaml'
+#configuration = YAML.load_file(File.dirname(__FILE__) + "/ansible/vars/#{options}.yml")
+configuration = YAML.load_file(File.expand_path("../../ansible/vars/#{options}.yml", __FILE__) )
+ansible_config = configuration['ansible_config'] || false
+
+Vagrant.require_version '>= 1.7'
+
+def require_plugins(plugins = {})
+  needs_restart = false
+  plugins.each do |plugin, version|
+    next if Vagrant.has_plugin?(plugin)
+    cmd =
+      [
+        'vagrant plugin install',
+        plugin
+      ]
+    cmd << "--plugin-version #{version}" if version
+    system(cmd.join(' ')) || exit!
+    needs_restart = true
+  end
+  exit system('vagrant', *ARGV) if needs_restart
+end
+
+require_plugins \
+  'vagrant-bindfs' => '0.3.2'
+
+def ansible_installed?
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).any? do |p|
+    exts.any? do |ext|
+      full_path = File.join(p, "ansible-playbook#{ext}")
+      File.executable?(full_path) && File.file?(full_path)
+    end
+  end
+end
+
+
+Vagrant.configure('2') do |config|
+  containers = [
+    { :name   => 'mysql',
+      :image  => 'mlong168/hybris-mysql-server',
+      :ports  => ['3306:3306'],
+      :groups => %w(mysql),
+      #:has_ssh    => 'true',
+    },
+    { :name   => 'redis',
+      :image  => 'mlong168/hybris-redis-server',
+      :ports  => ['6379:6379'],
+      :groups => %w(redis),
+      #:has_ssh    => 'true',
+    },
+    { :name   => 'solr',
+      :image  => 'mlong168/hybris-solr-server',
+      :ports  => ['8983:8983'],
+      :groups => %w(solr),
+      #:has_ssh    => 'true',
+    },
+    { :name   => 'cis',
+      :image  => 'mlong168/hybris-cis-server',
+      :ports  => ['8080:8080'],
+      :groups => %w(cis),
+      #:has_ssh    => 'true',
+    },
+    { :name   => 'hybris',
+      :image  => 'mlong168/hybris-server',
+      :ports  => ['8000:8000', '8001:8001'],
+      :groups => %w(hybris),
+      :has_ssh    => 'true',
+    },
+  ]
+
+  containers.each do |opts|
+    config.vm.define opts[:name] do |container|
+      container.vm.provider 'docker' do |d|
+        d.name                = opts[:name]
+        d.vagrant_vagrantfile = 'Vagrantfile.dockerhost'
+        d.cmd                 = ['/sbin/my_init', '--enable-insecure-key']
+        d.image               = opts[:image]
+        d.ports               = opts[:ports]
+        d.has_ssh             = opts[:has_ssh]
+      end
+
+      #if %w(hybris).include?(opts[:name])
+      #  container.vm.synced_folder '../../', '/opt/rccl-tourtrek-local'
+      #end
+
+      container.ssh.username = "root"
+      container.ssh.private_key_path = "phusion.key"
+
+      container.vm.provision 'ansible' do |ansible|
+        ansible.playbook = '../ansible/site.yml'
+        ansible.sudo = true
+
+        ansible.groups = {}
+        opts[:groups].each do |group|
+          ansible.groups[group] = opts[:name]
+        end
+        ansible.groups['development:children'] = [opts[:name]]
+        ansible.groups['docker:children'] = [opts[:name]]
+
+        ansible.tags = ENV['TAGS']
+        ansible.raw_arguments = Shellwords.shellsplit(ENV['ANSIBLE_ARGS']) if ENV['ANSIBLE_ARGS']
+        ansible.verbose = ENV['VERBOSE']
+        if ansible_config
+          ansible.extra_vars = ansible_config['extra_vars']
+        end
+      end
+    end
+  end
+end

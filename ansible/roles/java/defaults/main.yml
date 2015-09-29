@@ -1,0 +1,5 @@
+---
+java_packages:
+    - oracle-java7-installer
+    - oracle-java7-set-default
+java_cleanup: True

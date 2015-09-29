@@ -1,0 +1,7 @@
+#!/bin/sh
+
+SERVICE_NAME={{service_name}}
+DAEMON={{daemon}}
+
+exec chpst -u $SERVICE_NAME -o 5000000 -- $DAEMON
+

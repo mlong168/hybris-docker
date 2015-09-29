@@ -1,0 +1,28 @@
+#!/bin/bash
+
+OLD_DIR=`pwd`
+
+cd {{solr_installation_dir}}
+
+{% if solr_replication_mode == 'cloud' and solr_cloud_zookeeper_embedded != true %}
+JAVA_OPTS="-DzkHost={% for node in groups['tag_inventory_group_zookeeper'] %}{{ node }}:2181{% if not loop.last %},{% endif %}{% endfor %} $JAVA_OPTS"
+{% endif %}
+{% if solr_replication_mode == 'cloud' and solr_cloud_num_shards is defined %}
+JAVA_OPTS="-DnumShards={{solr_cloud_num_shards}} $JAVA_OPTS"
+{% endif %}
+{% if solr_replication_mode == 'cloud' and solr_cloud_zookeeper_embedded == true %}
+JAVA_OPTS="-DzkRun $JAVA_OPTS"
+{% endif %}
+JAVA_OPTS="{{solr_java_opts}} $JAVA_OPTS"
+
+pid=`ps -ef | grep 'port={{solr_port}}' | grep -v grep | tr -s ' ' | cut -d ' ' -f2`
+
+if [ -n "$pid" ]; then
+	kill -9 $pid
+fi 
+
+nohup java -Djetty.port="{{solr_port}}" -Dsolr.solr.home="{{solr_installation_dir}}" $JAVA_OPTS -jar {{solr_installation_dir}}/start.jar >/dev/null 2>&1 &
+
+pidout=`ps -ef | grep 'port={{solr_port}}' | grep -v grep | tr -s ' ' | cut -d ' ' -f2 > {{solr_installation_dir}}/solr.pid`
+
+cd $OLD_DIR

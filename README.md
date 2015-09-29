@@ -1,0 +1,76 @@
+How to install
+--------------
+**Requirements**
+
+You will need VirtualBox, vagrant and ansible to be installed. ansible also requires Python and some Python modules to be installed.
+
+Fast way to install VirtualBox and vagrant is to use brew cask. ansible can be installed with homebrew as well:
+
+ - First, register for a GitHub account (http://github.com). Needed to install caskroom 
+ - Open the GUI of Xcode to clear any required license agreement
+
+ - brew update
+ - brew install caskroom/cask/brew-cask
+ - brew cask install virtualbox
+ - brew cask install vagrant
+ - brew install ansible
+
+Start VM and Docker Apps
+--------
+Go to the hybris-docker directory and type **vagrant up --provider docker**. vagrant will download the base box and provision it with docker and ansible using your configuration.
+
+ - git clone https://USERNAME@keystone.roundarch.com/stash/scm/roylcarib/rccl-tourtrek.git
+ - cd /path/to/rccl-tourtrek
+ - git checkout develop
+ - cd /path/to/rccl-tourtrek/hybris-docker/development
+ - vagrant up --no-parallel --provider docker
+
+*Note that vagrant may ask for a sudo password. That's required when you're using NFS for folder synchronization.*
+
+Once it's done, you'll be able to login into it using vagrant ssh command. The hybris container stores the source in the /opt/rccl-tourtrek directory.
+
+ - vagrant ssh $docker-app
+
+Connecting to Hybris Web
+------------------------
+
+ - HTTP URL: http://localhost:8000
+ - HTTPS URL: https://localhost:8001 (https)
+
+Control
+-------
+
+**VM**
+
+Virtual machine can be controlled by running the following commands:
+
+ - vagrant status
+ - vagrant up OR vagrant up vagrant up $container
+ - vagrant provision  OR vagrant provision $container
+ - vagrant halt OR vagrant halt $container
+ - vagrant destroy OR vagrant destroy $container
+
+Hybris Restart
+------
+You can start and stop hybris by reloading the docker container:
+
+ - vagrant reload hybris
+
+Hybris Deploy
+-------------
+
+On first deploy the Hybris provision playbook will checkout the git repo (develop branch) and run any necessary configurations. It will also run through the normal Hybris build process and commence with initializing the MySQL database. 
+
+To test any changes to code you will need to rebuild Hybris. To do so you can run the following from the following:
+
+ - ansible-playbook -t hybris --extra-vars "branch=develop hybris_update_db=True hybris_init_db=False" ../ansible/site.yml
+
+Change the "branch" name to the one you are working on and want to test and change init and update to True or False depending on whether you would like to update the database or reinitialize. To skip both change both to False. 
+
+These options can also be set in: /path/to/rccl-tourtrek/hybris-docker/ansible/group_vars/hybris/config.yml
+
+Customization
+-------------
+
+Feel free to customize ansible playbooks as you need. But keep in mind that your changes may be lost if you don't commit your changes. Probably it will be best if you keep your customizations in a separate roles which names do not overlap with the playbooks provided.
+.

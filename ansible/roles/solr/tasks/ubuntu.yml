@@ -1,0 +1,11 @@
+---
+
+- name: Install solr package dependencies
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - openjdk-7-jdk 
+    - bash-completion
+    - s3cmd
+  when: ansible_distribution == 'Ubuntu'
+
+

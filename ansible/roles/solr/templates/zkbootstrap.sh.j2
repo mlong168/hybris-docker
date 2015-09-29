@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ZOO_HOSTS="{% for node in groups['tag_inventory_group_zookeeper'] %}{{ node }}:2181{% if not loop.last %},{% endif %}{% endfor %}"
+
+./zkcli.sh -z $ZOO_HOSTS -cmd bootstrap -s {{solr_installation_dir}}
+./zkcli.sh -zkhost $ZOO_HOSTS -cmd upconfig -confdir {{solr_cloud_collection_boostrap_dir}} -confname {{solr_cloud_collection_config_name}}
