@@ -9,6 +9,10 @@
     - node-sass
   tags: osx
 
+- name: Create maven .m2 dir
+  file: path=~/.m2  state=directory
+  tags: osx
+
 - name: Copy maven global settings template
   template:
     src=settings_xml_osx.j2
