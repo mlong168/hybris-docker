@@ -4,7 +4,7 @@ How to install
 
 You will need VirtualBox, vagrant and ansible to be installed. ansible also requires Python and some Python modules to be installed.
 
-Fast way to install VirtualBox and vagrant is to use brew cask. ansible can be installed with homebrew as well:
+Fast way to install VirtualBox and vagrant is to use brew cask. I've put together a dev playbook for Mac that will install all required development packages with a few commands.
 
  - https://github.com/mlong168/mac-dev-playbook
 
