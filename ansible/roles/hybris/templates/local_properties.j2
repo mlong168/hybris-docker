@@ -19,7 +19,7 @@ hybris.rest.client.logging.enabled=true
 ###############################################################################
 
 
-{% if cluster_enabled == 'true' %}
+{% if cluster_enabled == true %}
 clustermode={{ hybris_clustermode }}
 cluster.id={{ hybris_cluster_id }}
 cluster.maxid={{ hybris_cluster_maxid }}
@@ -32,7 +32,7 @@ cluster.broadcast.method.jgroups.configuration={{ hybris_cluster_broadcast_metho
 {% endif %}
 
 
-{% if cluster_enabled == 'false' %}
+{% if cluster_enabled == false %}
 clustermode=false
 {% endif %}
 
@@ -73,7 +73,7 @@ tomcat.debugjavaoptions=-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y
 ### DB SETTINGS ###############################################################
 ###############################################################################
 
-{% if mysql_enabled == 'true' %}
+{% if mysql_enabled == true %}
 db.url={{ hybris_db_url }}
 db.username={{ hybris_db_username }}
 db.password={{ hybris_db_password }}
@@ -87,7 +87,7 @@ mysql.allow.fractional.seconds={{ hybris_mysql_allow_fractional_seconds }}
 mysql.optional.tabledefs={{ hybris_mysql_optional_tabledefs }}
 {% endif %}
 
-{% if mysql_enabled == 'false' %}
+{% if mysql_enabled == false %}
 #db.url=jdbc:mysql://hybris.cehvnxmrqppg.us-west-2.rds.amazonaws.com/hybris?useConfigs=maxPerformance&characterEncoding=utf8
 #db.username=
 #db.password=
@@ -238,7 +238,7 @@ classloader.monitor.enabled=true
 ### MEDIA SETTINGS ############################################################
 ###############################################################################
 
-{% if s3_enabled == 'true' %}
+{% if s3_enabled == true %}
 media.default.storage.strategy={{ hybris_media_default_storage_strategy }}
 media.default.url.strategy={{ hybris_media_default_url_strategy }}
 media.globalSettings.s3MediaStorageStrategy.accessKeyId={{ hybris_media_globalSettings_s3MediaStorageStrategy_accessKeyId }}
@@ -248,7 +248,7 @@ media.globalSettings.s3MediaStorageStrategy.bucketId={{ hybris_media_globalSetti
 media.globalSettings.s3MediaStorageStrategy.url.signed={{ hybris_media_globalSettings_s3MediaStorageStrategy_url_signed }}
 {% endif %}
 
-{% if s3_enabled == 'false' %}
+{% if s3_enabled == false %}
 #media.default.storage.strategy=s3MediaStorageStrategy
 #media.default.url.strategy=localMediaWebURLStrategy
 #media.globalSettings.s3MediaStorageStrategy.accessKeyId=AKIAJWUK2ZZUBPJ7PH4Q
@@ -409,13 +409,13 @@ solr.endpoint.url={% for host in groups['tag_solr_role_master'] %}
 {% endfor %}
 {% endif %}
 
-{% if hybris_solr_mode == 'standalone' and docker == 'true' and solr_build_local == 'false' %}
+{% if hybris_solr_mode == 'standalone' and docker == true and solr_build_local == false %}
 solr.mode=standalone
 # standalone SOLR endpoint
 solr.endpoint.url=http://{{ hostvars.solr.ansible_ssh_host }}:8983/solr
 {% endif %}
 
-{% if hybris_solr_mode == 'standalone' and docker == 'true' and solr_build_local == 'true' %}
+{% if hybris_solr_mode == 'standalone' and docker == true and solr_build_local == true %}
 solr.mode=standalone
 # standalone SOLR endpoint
 solr.endpoint.url=http://dockerhost:8983/solr
