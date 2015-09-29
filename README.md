@@ -13,17 +13,21 @@ Fast way to install VirtualBox and vagrant is to use brew cask. I've put togethe
 
 - **git clone https://github.com/mlong168/hybris-docker.git**
 
-To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybris-docker/development**.
-
-  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-osx.yml**
-  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-ubuntu.yml**
-
 Start VM and Docker Apps
 --------
 
 Go to the **hybris-docker/development** directory and type 
 
-- **vagrant up --provider docker --no-provision --no-parallel**
+- **vagrant up --provider docker --no-provision --no-parallel mysql solr redis cis**
+
+To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybris-docker/development**.
+
+  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-osx.yml**
+  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-ubuntu.yml**
+
+Then provision the hybris docker container
+
+  - **vagrant up --provider docker hybris**
 
 Vagrant will download the base box and provision it with docker and ansible using your configuration.
 
