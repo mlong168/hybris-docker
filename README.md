@@ -40,12 +40,12 @@ Once it's done, you'll be able to login into it using vagrant ssh command. The h
 Connecting to Hybris Web
 ------------------------
 
-Localhost:
+**Localhost:**
 
  - HTTP URL: http://localhost:8000
  - HTTPS URL: https://localhost:8001 (https)
 
-Docker Container:
+**Docker Container:**
 
  - HTTP URL: http://dockerhost:8000
  - HTTPS URL: https://dockerhost:8001 (https)
