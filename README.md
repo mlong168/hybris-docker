@@ -4,9 +4,14 @@ How to install
 
 You will need VirtualBox, vagrant and ansible to be installed. ansible also requires Python and some Python modules to be installed.
 
-Fast way to install VirtualBox and vagrant is to use brew cask. I've put together a dev playbook for Mac that will install all required development packages with a few commands.
+Fast way to install VirtualBox and vagrant is to use brew cask. I've put together a dev playbook for Mac that will install all required development packages with a few commands. You clone the repo below
 
- - https://github.com/mlong168/mac-dev-playbook
+ - git clone https://github.com/mlong168/mac-dev-playbook
+ - Once cloned follow the Readme
+
+*Note: If you already have the needed packages you can clone this repo and follow the instructions below*
+
+- **git clone https://github.com/mlong168/hybris-docker.git**
 
 To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybris-docker/development**.
 
