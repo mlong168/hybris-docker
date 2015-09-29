@@ -36,6 +36,10 @@
   copy: src=.s3cfg dest=~/ mode=0600
   tags: osx
 
+- name: Copy .bash_profile
+  copy: src=.bash_profile dest=~/ mode=0644
+  tags: osx
+
 - name: Download hybris osx from S3
   command: "{{ item }}"
   with_items:
