@@ -118,6 +118,10 @@
   copy: src={{ hybris_mysql_lib_dir }} dest={{ hybris_mysql_lib_dir }} mode=0644 
   tags: osx
 
+- name: Setup hybris npm
+  shell: chdir={{ hybris_node_dir }} npm install
+  tags: osx
+
 - name: Clean environment before build
   shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant clean
   sudo: no
