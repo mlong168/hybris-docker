@@ -23,13 +23,13 @@ Go to the **hybris-docker/development** directory and type
 Vagrant will download the base box and provision it with docker and ansible using your configuration.
 
 - To install Hybris in Docker: 
-  - BUILD_OPTS='install' vagrant provision hybris
+  - **BUILD_OPTS='install' vagrant provision hybris**
 - To build and update master db: 
-  - BUILD_OPTS='updatemaster' vagrant provision hybris
+  - **BUILD_OPTS='updatemaster' vagrant provision hybris**
 - To build and init the database:  
-  - BUILD_OPTS=’initmaster’ vagrant provision hybris
+  - **BUILD_OPTS=’initmaster’ vagrant provision hybris**
 - To run a build without database update: 
-  - vagrant provision hybris
+  - **vagrant provision hybris**
 
 *Note that vagrant may ask for a sudo password. That's required when you're using NFS for folder synchronization.*
 
