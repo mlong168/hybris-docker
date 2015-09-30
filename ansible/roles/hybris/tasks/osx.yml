@@ -126,7 +126,7 @@
   tags: osx
 
 - name: Add hybris mysql driver
-  copy: src={{ hybris_mysql_lib_dir }} dest={{ hybris_mysql_lib_dir }} mode=0644 
+  copy: src={{ hybris_mysql_driver }} dest={{ hybris_mysql_lib_dir }} mode=0644 
   tags: osx
 
 - name: Setup hybris npm
