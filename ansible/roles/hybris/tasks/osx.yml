@@ -134,24 +134,24 @@
   tags: osx
 
 - name: Clean environment before build
-  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant clean
+  shell: chdir={{ hybris_home_dir }} . setantenv.sh && ant clean
   sudo: no
   tags: osx
   when: hybris_ant_clean |default(False)
 
 - name: Full Build hybris server
-  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant install && ant customize && ant
+  shell: chdir={{ hybris_home_dir }} . setantenv.sh && ant install && ant customize && ant
   sudo: no
   tags: osx
 
 - name: Initialize hybris database
-  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant initmaster
+  shell: chdir={{ hybris_home_dir }} . setantenv.sh && ant initmaster
   sudo: no
   when: hybris_init_db |default(False)
   tags: osx
 
 - name: Update hybris 
-  shell: chdir={{ hybris_home_dir }} . {{ ant_profile }} && ant updatemaster
+  shell: chdir={{ hybris_home_dir }} . setantenv.sh && ant updatemaster
   sudo: no
   when: hybris_update_db |default(False)
   tags: osx
