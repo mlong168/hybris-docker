@@ -22,8 +22,8 @@ Go to the **hybris-docker/development** directory and type
 
 To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybris-docker/development**.
 
-  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-osx.yml**
-  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-ubuntu.yml**
+  - **ansible-playbook -i ../shell/inventory .././ansible/deploy-osx.yml**
+  - **ansible-playbook -i ../shell/inventory .././ansible/deploy-ubuntu.yml**
 
 Then provision the hybris docker container
 
