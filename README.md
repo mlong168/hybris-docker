@@ -22,8 +22,8 @@ Go to the **hybris-docker/development** directory and type
 
 To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybris-docker/development**.
 
-  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-osx.yml**
-  - **ansible-playbook -v -i ../shell/inventory .././ansible/deploy-ubuntu.yml**
+  - **ansible-playbook -i ../shell/inventory .././ansible/deploy-osx.yml**
+  - **ansible-playbook -i ../shell/inventory .././ansible/deploy-ubuntu.yml**
 
 Then provision the hybris docker container
 
@@ -66,11 +66,11 @@ Control
 
 Virtual machine can be controlled by running the following commands:
 
- - vagrant status
- - vagrant up OR vagrant up vagrant up $container
- - vagrant provision  OR vagrant provision $container
- - vagrant halt OR vagrant halt $container
- - vagrant destroy OR vagrant destroy $container
+ - **vagrant status**
+ - **vagrant up --provider docker --no-parallel** OR **vagrant up $container**
+ - **vagrant provision**  OR **vagrant provision $container**
+ - **vagrant halt** OR **vagrant halt $container**
+ - **vagrant destroy** OR **vagrant destroy $container**
 
 Hybris Restart
 ------
