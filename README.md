@@ -18,7 +18,7 @@ Start VM and Docker Apps
 
 Go to the **hybris-docker/development** directory and type 
 
-- **vagrant up --provider docker --no-provision --no-parallel mysql solr redis cis**
+- **vagrant up --provider docker --no-provision --no-parallel**
 
 To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybris-docker/development**.
 
@@ -27,7 +27,7 @@ To Provision Hyrbis locally (MacOSX and Ubuntu only) run the following in **hybr
 
 Then provision the hybris docker container
 
-  - **vagrant up --provider docker hybris**
+  - **vagrant provision hybris**
 
 Vagrant will download the base box and provision it with docker and ansible using your configuration.
 
