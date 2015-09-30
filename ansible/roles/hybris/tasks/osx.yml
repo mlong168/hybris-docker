@@ -9,6 +9,9 @@
     - node-sass
   tags: osx
 
+- stat: path=/etc/shorewall/rules
+  register: shorewall_rules
+
 - name: Create maven .m2 dir
   file: path=~/.m2  state=directory
   tags: osx
@@ -36,9 +39,13 @@
   copy: src=.s3cfg dest=~/ mode=0600
   tags: osx
 
+- stat: path=~/.bash_profile
+  register: bash_profile
+
 - name: Copy .bash_profile
   copy: src=.bash_profile dest=~/ mode=0644
   tags: osx
+  when: bash_profile.exist == False
 
 - name: Download hybris osx from S3
   command: "{{ item }}"
