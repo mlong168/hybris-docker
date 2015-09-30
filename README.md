@@ -66,11 +66,11 @@ Control
 
 Virtual machine can be controlled by running the following commands:
 
- - vagrant status
- - vagrant up OR vagrant up vagrant up $container
- - vagrant provision  OR vagrant provision $container
- - vagrant halt OR vagrant halt $container
- - vagrant destroy OR vagrant destroy $container
+ - **vagrant status**
+ - **vagrant up --provider docker --no-parallel** OR **vagrant up $container**
+ - **vagrant provision**  OR **vagrant provision $container**
+ - **vagrant halt** OR **vagrant halt $container**
+ - **vagrant destroy** OR **vagrant destroy $container**
 
 Hybris Restart
 ------
