@@ -45,7 +45,7 @@
 - name: Copy .bash_profile
   copy: src=.bash_profile dest=~/ mode=0644
   tags: osx
-  when: bash_profile.exist == False
+  when: bash_profile.stat.exists == False
 
 - name: Download hybris osx from S3
   command: "{{ item }}"
