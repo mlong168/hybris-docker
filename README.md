@@ -36,7 +36,7 @@ Vagrant will download the base box and provision it with docker and ansible usin
 - To build and update master db: 
   - **BUILD_OPTS='updatemaster' vagrant provision hybris**
 - To build and init the database:  
-  - **BUILD_OPTS=’initmaster’ vagrant provision hybris**
+  - **BUILD_OPTS='initmaster' vagrant provision hybris**
 - To run a build without database update: 
   - **vagrant provision hybris**
 
