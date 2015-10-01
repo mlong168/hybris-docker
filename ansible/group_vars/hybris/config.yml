@@ -19,6 +19,7 @@ java_install: false
 base_install: false
 npm_install: False
 local_enabled: True
+mysql_enabled: true
 linux_install: False
 
 # Maven Setting

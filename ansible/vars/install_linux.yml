@@ -21,4 +21,6 @@ ansible_config:
     npm_install: False
     local_enabled: True
     linux_install: True
+    mysql_enabled: true
+
 

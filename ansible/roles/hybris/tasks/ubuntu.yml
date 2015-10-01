@@ -6,20 +6,18 @@
 - name: Install hybris package dependencies
   apt: pkg={{ item }} state=latest
   with_items:
-    - npm
-    - nodejs-legacy
     - s3cmd
     - unzip
     - git-core
-  when: ansible_distribution == 'Ubuntu'
+  when: npm_install |default(False)
   tags: build
 
 - name: Setup node.js
-  command: "{{ item }}"
+  npm: global=yes name={{ item }}
   with_items:
-    - npm install -g gulp
-    - npm install map-stream
-    - npm install node-sass
+    - gulp
+    - map-stream
+    - node-sass
   when: npm_install |default(False)
   tags: build
 

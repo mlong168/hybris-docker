@@ -18,7 +18,8 @@ ansible_config:
     hybris_install_archive: False
     java_install: false
     base_install: false
-    npm_install: False
+    npm_install: True
     local_enabled: True
     linux_install: False
+    mysql_enabled: true
 
