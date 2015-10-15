@@ -9,7 +9,7 @@
     - s3cmd
     - unzip
     - git-core
-  when: npm_install |default(False)
+  when: ansible_distribution == 'Ubuntu'
   tags: build
 
 - name: Setup node.js

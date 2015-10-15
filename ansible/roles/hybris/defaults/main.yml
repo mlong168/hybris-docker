@@ -88,7 +88,7 @@ hybris_runit_dir: "/etc/service/hybris"
 hybris_java_mem: "3G"
 hybris_cache_main: 300000
 hybris_java_permSize: "512M"
-  
+
 ####################Tomcat Settings##################
 hybris_tomcat_development_mode: "true"
 hybris_tomcat_http_port: 8000
@@ -140,7 +140,7 @@ hybris_cybersource_sop_response_url: ""
 # Database Options
 
 hybris_db_url: ""
-hybris_db_driver: "" 
+hybris_db_driver: ""
 hybris_db_username: ""
 hybris_db_password: ""
 hybris_mysql_tabletype: ""

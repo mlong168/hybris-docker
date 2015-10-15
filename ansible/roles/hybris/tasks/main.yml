@@ -39,12 +39,12 @@
 
 - name: Checkout archive version from git repo
   command: git  archive --format=tar --remote={{ hybris_git_user }}:{{ hybris_home_dir }} {{ branch }} > /opt/{{ branch }}.tar
-  when: checkout_archive |default(False)
+  when: hybris_install_archive |default(False)
   tags: git
 
 - name: Untar git archive
   unarchive: src=/opt/{{ branch }}.tar dest={{ hybris_home_dir }}
-  when: checkout_archive |default(False)
+  when: hybris_install_archive |default(False)
   tags: git
 
 - name: Create temp directory

@@ -10,7 +10,7 @@ ansible_config:
     hybris_ant_clean: True
     checkout_branch: True
     branch: 'develop'
-    hybris_master_blaster: hybris
+    hybris_master_blaster: localhost
     clone_repo: False
     hybris_initd_service: false
     hybris_runit_dir: "/etc/service/hybris"
@@ -23,3 +23,4 @@ ansible_config:
     npm_install: False
     local_enabled: True
     linux_install: False
+    mysql_enabled: true

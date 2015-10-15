@@ -12,12 +12,12 @@
   tags: local_conf
 
 - name: Setup node.js
-  command: "{{ item }}"
+  npm: global=yes name={{ item }}
   with_items:
-    - npm install -g gulp
-    - npm install map-stream
-    - npm install node-sass
-  tags: local_conf
+    - gulp
+    - map-stream
+    - node-sass
+  tags: build
 
 - name: Copy maven global settings template
   template:

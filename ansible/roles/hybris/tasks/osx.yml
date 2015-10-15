@@ -9,9 +9,6 @@
     - node-sass
   tags: osx
 
-- stat: path=/etc/shorewall/rules
-  register: shorewall_rules
-
 - name: Create maven .m2 dir
   file: path=~/.m2  state=directory
   tags: osx
