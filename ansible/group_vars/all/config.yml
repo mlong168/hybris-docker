@@ -2,7 +2,7 @@
 docker: true
 vm_name: hybris
 path: /opt/rccl-tourtrek
-git_url: https://SA_ROYALGIT:75M265puJ8dYKFnP5zG4@keystone.roundarch.com/stash/scm/roylcarib/rccl-tourtrek.git
+git_url: 
 git_branch: develop
 server_restart_command: sv restart {{ app_name }}
 vm_os: phusion/ubuntu-14.04-amd64
